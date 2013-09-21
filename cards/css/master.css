@@ -1,0 +1,65 @@
+/*-----------------------------------------------------------------------------------
+  Global Reset v0.3 (based on http://meyerweb.com/eric/tools/css/reset/ - v1.0 | 20080212)
+-----------------------------------------------------------------------------------*/
+  html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, code, em, img, small, strike, strong, sub, sup, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
+  body { line-height: 1; }
+  ol, ul { list-style: none; }
+  :focus { outline: 0; }
+  table { border-collapse: collapse; border-spacing: 0; }
+  /* HTML5 */
+  article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary { display: block; }
+
+
+  /* Element */
+  html, body { height: 100%; width: 100%; }
+  body { background-color: #e7e7e7; font-family: 'card_charactersregular', Helvetica, Arial, sans-serif; font-size: 10px; padding: 20px; }
+  h1 { color: red; font-size: 96px; }
+
+
+  /* Card */
+  #table { height: 100%; position: relative; width: 100%; }
+
+	.card { background-color: #fff; -moz-border-radius: 10px; -webkit-border-radius: 10px; -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); float: left; height: 280px; margin: 0 15px 15px 0; position: relative; width: 200px; z-index: 2; }
+	.card .back { background-color: red; -webkit-transform: rotateY(180deg); }
+	.card.flipped { -webkit-transform: rotateY(180deg); }
+	.card.heart, .card.diamond { color: red; }
+
+	.card .corner { line-height: 1; overflow: hidden; position: absolute; text-align: center; }
+	.card .corner span { display: block; font-size: 24px; font-weight: normal; }
+	.card .corner .number { font-size: 32px; height: 32px; line-height: 34px; }
+	.card.ten .corner .number { font-size: 30px; letter-spacing: -4.8px; margin-left: -8px; width: 42px; padding-right: 4px;}
+	.card .corner.top { left: 8px; top: 12px; }
+	.card .corner.bottom { bottom: 12px; right: 8px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+  .card.ten .corner.top { left: 6px; }
+  .card.ten .corner.bottom { right: 6px; }
+	.card .suit { font-family: 'card_charactersregular'; font-size: 48px; font-weight: normal; height: 52px; line-height: 52px; overflow: hidden; position: absolute; text-align: center; width: 50px; }
+	.card .top_center { left: 76px; top: 24px; }
+	.card .top_left { left: 34px; top: 24px; }
+	.card .top_right { right: 34px; top: 24px; }
+
+	.card .middle_center { left: 76px; top: 110px; }
+	.card .middle_top { left: 76px; top: 70px; }
+	.card .middle_bottom { bottom: 70px; left: 76px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+	.card .middle_left { left: 34px; top: 110px; }
+	.card .middle_right { right: 34px; top: 110px; }
+	.card .middle_top_center { left: 76px; top: 60px; }
+	.card .middle_top_left { left: 34px; top: 80px; }
+	.card .middle_top_right { right: 34px; top: 80px; }
+	.card .middle_bottom_left { bottom: 80px; left: 34px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+	.card .middle_bottom_right { bottom: 80px; right: 34px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+	.card .middle_bottom_center { bottom: 60px; left: 76px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+
+	.card .bottom_center { bottom: 24px; left: 76px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+	.card .bottom_left { bottom: 24px; left: 34px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+	.card .bottom_right { bottom: 24px; right: 34px; -moz-transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+  @font-face {
+      font-family: 'card_charactersregular';
+      src: url('cardc___-webfont.eot');
+      src: url('cardc___-webfont.eot?#iefix') format('embedded-opentype'),
+           url('cardc___-webfont.woff') format('woff'),
+           url('cardc___-webfont.ttf') format('truetype'),
+           url('cardc___-webfont.svg#card_charactersregular') format('svg');
+      font-weight: normal;
+      font-style: normal;
+
+  }
