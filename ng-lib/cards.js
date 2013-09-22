@@ -21,54 +21,50 @@ angular.module('anchorage', [])
 function CardsController($scope)
 {
   $scope.cards = [];
-  $scope.numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'];
-  $scope.classes = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine','ten', 'jack', 'queen', 'king', 'ace'];
-  $scope.suits = ['club', 'diamond', 'heart', 'spade'];
-  $scope.suit_symbols = [']', '[', '{', '}'];
+  var numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'];
+  var classes = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine','ten', 'jack', 'queen', 'king', 'ace'];
+  var suits = ['club', 'diamond', 'heart', 'spade'];
+  var suit_symbols = [']', '[', '{', '}'];
 
   for (var i = 0; i < 52; ++i)
   {
     var suit = Math.floor(i / 13);
     var card_obj = {
-      'number': $scope.numbers[i % 13],
-      'suit': $scope.suits[suit],
-      'suit_symbol': $scope.suit_symbols[suit],
-      'classes' : $scope.classes[i],
+      'number': numbers[i % 13],
+      'suit': suits[suit],
+      'suit_symbol': suit_symbols[suit],
+      'classes' : classes[i],
     };
 
-    var class_adder = function(class_name, array) { return function(number) { return array.indexOf(number) != -1 ? class_name : ''; }; };
+    var gen_symbol = function(class_name, array) { return function(number) { return array.indexOf(number) != -1 ? class_name : ''; }; };
 
-    var arr1 = [4, 5, 6, 7, 8, 9, 10];
-    var top_left = class_adder('top_left', arr1);
-    var top_right = class_adder('top_right', arr1);
-    var bottom_left = class_adder('bottom_left', arr1);
-    var bottom_right = class_adder('bottom_right', arr1);
+    var corner_syms = [4, 5, 6, 7, 8, 9, 10];
+    var top_bottom_center_syms = [2, 3]
+    var middle_inner_syms = [6, 7, 8];
+    var middle_outer_syms = [9, 10];
 
-    var arr2 = [2, 3]
-    var top_center = class_adder('top_center', arr2);
-    var bottom_center = class_adder('bottom_center', arr2);
+    var symbol_locs_fns = [
+      gen_symbol('top_left', corner_syms),
+      gen_symbol('top_right', corner_syms),
 
-    var arr3 = [3, 5, 9, 'J', 'Q', 'K', 'A'];
-    var middle_center = class_adder('middle_center', arr3);
+      gen_symbol('bottom_left', corner_syms),
+      gen_symbol('bottom_right', corner_syms),
 
-    var arr4 = [6, 7, 8];
-    var middle_left = class_adder('middle_left', arr4);
-    var middle_right = class_adder('middle_right', arr4);
+      gen_symbol('top_center', top_bottom_center_syms),
+      gen_symbol('bottom_center', top_bottom_center_syms),
+      gen_symbol('middle_center', [3, 5, 9, 'J', 'Q', 'K', 'A']),
 
-    var arr5 = [9, 10];
-    var middle_top_left = class_adder('middle_top_left', arr5);
-    var middle_top_right = class_adder('middle_top_right', arr5);
-    var middle_bottom_left = class_adder('middle_bottom_left', arr5);
-    var middle_bottom_right = class_adder('middle_bottom_right', arr5);
+      gen_symbol('middle_left', middle_inner_syms),
+      gen_symbol('middle_right', middle_inner_syms),
 
-    var middle_top_center = class_adder('middle_top_center', [7, 8, 10]);
-    var middle_bottom_center = class_adder('middle_bottom_center', [8, 10]);
+      gen_symbol('middle_top_left', middle_outer_syms),
+      gen_symbol('middle_top_right', middle_outer_syms),
+      gen_symbol('middle_bottom_left', middle_outer_syms),
+      gen_symbol('middle_bottom_right', middle_outer_syms),
 
-    // TODO: Refactor
-    var symbol_locs_fns = [top_left, top_right, bottom_left, bottom_right, top_center,
-      bottom_center, middle_center, middle_left, middle_right, middle_top_left,
-      middle_top_right, middle_bottom_left, middle_bottom_right, middle_top_center,
-      middle_bottom_center];
+      gen_symbol('middle_top_center', [7, 8, 10]),
+      gen_symbol('middle_bottom_center', [8, 10]),
+    ];
 
     var symbol_locs = [];
 
@@ -76,7 +72,7 @@ function CardsController($scope)
     for (j = 0; j < symbol_locs_fns.length; ++j)
     {
       var symbol_loc_fn = symbol_locs_fns[j];
-      var res = symbol_loc_fn($scope.numbers[i % 13]);
+      var res = symbol_loc_fn(numbers[i % 13]);
       if (res)
       {
         symbol_locs.push(res);
