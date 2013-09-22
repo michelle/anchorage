@@ -9,21 +9,7 @@ angular.module('anchorage', [])
             '<span class="number">{{card.number}}</span>' +
             '<span>{{card.suit_symbol}}</span>' +
           '</div>' +
-          '<span ng-show="card.top_left" class="suit top_left">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.top_center" class="suit top_center">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.top_right" class="suit top_right">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_top_left" class="suit middle_top_left">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_top_center" class="suit middle_top_center">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_top_right" class="suit middle_top_right">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_left" class="suit middle_left">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_center" class="suit middle_center">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_right" class="suit middle_right">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.bottom_left" class="suit bottom_left">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.bottom_center" class="suit bottom_center">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.bottom_right" class="suit bottom_right">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_bottom_center" class="suit middle_bottom_center">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_bottom_left" class="suit middle_bottom_left">{{card.suit_symbol}}</span>' +
-          '<span ng-show="card.middle_bottom_right" class="suit middle_bottom_right">{{card.suit_symbol}}</span>' +
+          '<span ng-repeat="symbol in card.symbols" class="suit {{symbol}}">{{card.suit_symbol}}</span>' +
           '<div class="corner bottom">' +
             '<span class="number">{{card.number}}</span>' +
             '<span>{{card.suit_symbol}}</span>' +
@@ -96,12 +82,8 @@ function CardsController($scope)
         symbol_locs.push(res);
       }
     }
+    card_obj.symbols = symbol_locs;
 
-    for (j = 0; j < symbol_locs.length; ++j)
-    {
-      card_obj[symbol_locs[j]] = true;
-    }
-    console.log(card_obj);
     $scope.cards.push(card_obj);
   }
 }
