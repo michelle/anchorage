@@ -1,0 +1,16 @@
+<html ng-app="anchorage">
+  <head>
+    <link rel="stylesheet" href="../../cards/css/master.css">
+
+    <script src="../../third-party/angular.min.js"></script>
+    <script src="../../hangouts/hangouts.js"></script>
+    <script src="../cards.js"></script>
+  </head>
+  <body>
+    <div id="board">
+      <div id="cards" ng-controller="CardsController">
+        <card ng-repeat="card in cards"></card>
+      </div>
+    </div>
+  </body>
+</html>
