@@ -75,9 +75,10 @@ h1 { color: red; font-size: 96px; }
 /* entire container, keeps perspective */
 .card_container {
   -webkit-perspective: 1000;
+  display: inline-block;
 }
 
-.card.flipped {
+.card.flipped, .card_container:hover .card {
   -webkit-transform: rotateY(180deg);
 }
 
@@ -117,9 +118,7 @@ h1 { color: red; font-size: 96px; }
   display: none;
 }
 .card_container {
-  position: absolute;
-  top: 0;
-  left: 0;
+
 }
 #board {
   width: 100%;

@@ -55,6 +55,8 @@
   var globalZ = 5;
 
   var self = this;
+
+  // Add movement directives
   move.prototype.player = function(player){
     this.player = player;
     return this;
@@ -99,7 +101,7 @@ function rand (id) {
 }
 
 for (j = 0; j < 52; j++) {
-  rand('card-' + j);
+ // rand('card-' + j);
 }
 var dis = new Display(document.getElementById('board'));
 
