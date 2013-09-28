@@ -120,18 +120,18 @@ Display.prototype.receive = function (name, data) {
     case 'game-start':
       this.gameStart(data);
       break;
-    case 'roundStart':
+    case 'round-start':
       break;
-    case 'turnStart':
+    case 'turn-start':
       this.turnStart(data.playerId);
       break;
-    case 'turnEnd':
+    case 'turn-end':
       this.turnEnd(data.playerId, data.play);
       break;
-    case 'roundEnd':
+    case 'round-end':
       this.roundEnd(data);
       break;
-    case 'gameEnd':
+    case 'game-end':
       break;
 
   }
