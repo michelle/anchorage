@@ -97,6 +97,10 @@ Display.prototype.card = function(name) {
   return document.querySelector('.'+name);
 }
 
+Display.prototype.profile = function(playerId) {
+  return this.profile(playerId);
+}
+
 Display.prototype.receive = function (name, data) {
 
   // SERVER TO CLIENT EVENTS
@@ -111,16 +115,21 @@ Display.prototype.receive = function (name, data) {
   //
   switch (name) {
     case 'join':
+      this.join(data.playerId, data.info);
       break;
     case 'game-start':
+      this.gameStart(data);
       break;
     case 'roundStart':
       break;
     case 'turnStart':
+      this.turnStart(data.playerId);
       break;
     case 'turnEnd':
+      this.turnEnd(data.playerId, data.play);
       break;
     case 'roundEnd':
+      this.roundEnd(data);
       break;
     case 'gameEnd':
       break;
@@ -135,10 +144,11 @@ Display.prototype.receive = function (name, data) {
 }
 
 Display.prototype.join = function(playerId, info) {
-  $('#player'+playerId).text(info.name);
+  this.profile(playerId).text(info.name);
 };
 
 Display.prototype.gameStart = function(players) {
+  var self = this;
   var hands = [];
   for ( var id in players ) {
     hands.push(players[id].hand);
@@ -146,13 +156,29 @@ Display.prototype.gameStart = function(players) {
   async.timesSeries(13, function(i, next){
     async.timesSeries(4, function(j, next){
       var card = hands[j][i];
-      move(this.card(card)).player(j).toHand().duration(100).end(next);
+      move(self.card(card)).player(j).toHand().duration(100).end(next);
     }, util.noop);
   }, util.noop);
 }
 
 Display.prototype.turnStart = function(playerId) {
+  $('.player').removeClass('in-turn');
+  this.profile(playerId).addClass('in-turn');
+}
 
+Display.prototype.turnEnd = function(playerId, play) {
+  this.profile(playerId).text('Guessed ' + play.call);
+  move(this.card(play.card)).player(playerId).toPlay().end();
+}
+
+Display.prototype.roundEnd = function(outcome) {
+  for (var playerId in outcome) {
+    var action = outcome[playerId];
+    for (var i = 0; i < action.cardsWon.length; i++) {
+      move(this.card(action.cardsWon[i])).player(playerId).toPile().end();
+    }
+    this.profile(playerId).text('Score ', action.score);
+  }
 }
 // TEST
 /*
