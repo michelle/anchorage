@@ -93,15 +93,69 @@ Display.prototype._setMoveFunctions = function() {
   }
 }
 
-Display.prototype.getCard = function(suit, num) {
-  return document.querySelector('.'+suit+'-'+num);
+Display.prototype.card = function(name) {
+  return document.querySelector('.'+name);
 }
 
+Display.prototype.receive = function (name, data) {
 
+  // SERVER TO CLIENT EVENTS
+  //
+  // join
+  // game-start
+  // round-start
+  // turn-start
+  // turn-end
+  // round-end
+  // game-end
+  //
+  switch (name) {
+    case 'join':
+      break;
+    case 'game-start':
+      break;
+    case 'roundStart':
+      break;
+    case 'turnStart':
+      break;
+    case 'turnEnd':
+      break;
+    case 'roundEnd':
+      break;
+    case 'gameEnd':
+      break;
 
+  }
 
+  // CLIENT TO SERVER EVENTS
+  // join
+  // play
+  //
+
+}
+
+Display.prototype.join = function(playerId, info) {
+  $('#player'+playerId).text(info.name);
+};
+
+Display.prototype.gameStart = function(players) {
+  var hands = [];
+  for ( var id in players ) {
+    hands.push(players[id].hand);
+  }
+  async.timesSeries(13, function(i, next){
+    async.timesSeries(4, function(j, next){
+      var card = hands[j][i];
+      move(this.card(card)).player(j).toHand().duration(100).end(next);
+    }, util.noop);
+  }, util.noop);
+}
+
+Display.prototype.turnStart = function(playerId) {
+
+}
 // TEST
-
+/*
 var i = 0;
 
 function rand (id) {
@@ -133,3 +187,4 @@ function fakePlay() {
 function randCard(j) {
   return '#card-' + (Math.floor(Math.random() * 13) * 4 + (j || 0));
 }
+*/

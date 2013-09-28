@@ -1,4 +1,12 @@
-﻿var game = new Game();
+﻿
+$(function(){
+
+
+
+
+});
+
+var game = new Game();
 function test () {
   game.join(); game.join(); game.join(); game.join(); game.start(); game.dumpHands();
 
