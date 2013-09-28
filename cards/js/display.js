@@ -1,6 +1,15 @@
 ﻿function Display (board) {
 
-  this.CARD_SIZE = {width: 200, height: 280, scale: 0.7};
+  // Sets the default board parameters
+  this._setDefaults();
+
+  // Adds functions to move class so we can move cards elegantly
+  this._setMoveFunctions();
+
+}
+
+Display.prototype._setDefaults = function() {
+ this.CARD_SIZE = {width: 200, height: 280, scale: 0.7};
   // Generate board targets
 
   var boardWidth = board.clientWidth;
@@ -52,8 +61,10 @@
     player.play.y -= this.CARD_SIZE.height / 2;
   }
 
-  var globalZ = 5;
+  this._globalZ = 5;
+};
 
+Display.prototype._setMoveFunctions = function() {
   var self = this;
 
   // Add movement directives
@@ -77,12 +88,14 @@
   move.prototype.end = function(cb) {
     this.scale(self.CARD_SIZE.scale);
     this.toOrientation();
-    this.el.style.zIndex = globalZ++;
+    this.el.style.zIndex = self._globalZ++;
     this._end(cb);
   }
 }
 
-
+Display.prototype.getCard = function(suit, num) {
+  return document.querySelector('.'+suit+'-'+num);
+}
 
 
 
