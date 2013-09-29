@@ -62,7 +62,7 @@ Display.prototype._setHoverFunctions = function() {
 };
 
 Display.prototype._setDefaults = function(board) {
- this.CARD_SIZE = {width: 200, height: 280, scale: 0.7};
+ this.CARD_SIZE = {width: 200, height: 280, scale: 0.6};
   // Generate board targets
 
   var boardWidth = board.clientWidth;
