@@ -9,15 +9,31 @@
   </head>
   <body>
 
+  <div class="cover"></div>
+  <div class="spotlight deck"></div>
+  <div class="spotlight player"></div>
+  <div class="spotlight center"></div>
 
-    <div class="player0" id="player0"></div>
-    <div class="player1" id="player1"></div>
-    <div class="player2" id="player2"></div>
-    <div class="player3" id="player3"></div>
+    <div class="players">
+      <div class="player0" id="player0"></div>
+      <div class="player1" id="player1"></div>
+      <div class="player2" id="player2"></div>
+      <div class="player3" id="player3"></div>
+    </div>
 
     <div id="board"></div>
 
     <div id="HACK"></div>
+
+    <div class="chips">
+      <div class="chip call-0"></div>
+      <div class="chip call-1"></div>
+      <div class="chip call-2"></div>
+      <div class="chip call-3"></div>
+      <div class="chip call-2-s"></div>
+      <div class="chip call-3-s"></div>
+      <div class="chip call-4-s"></div>
+    </div>
 
 
     <!-- All of the cards -->
@@ -1198,10 +1214,10 @@
           <div class="back"></div>
         </div>
       </div>
+    <script src="js/jquery.min.js"></script>
     <script src="js/async.js"></script>
     <script src="js/move.js"></script>
     <script src="js/display.js"></script>
-    <script src="js/jquery.min.js"></script>
     <script src="../lib/game/events.js"></script>
     <script src="../lib/game/util.js"></script>
     <script src="../lib/game/deck.js"></script>

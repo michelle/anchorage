@@ -5,17 +5,19 @@
   // Adds functions to move class so we can move cards elegantly
   this._setMoveFunctions();
 
+  this._initializeCards();
+  this._addUIElements();
+
   // HACK HACK HACK UNDO THIS!
   this.game = game;
   this._setHoverFunctions();
-
-  var offset = 0;
-  $('.card_container').each(function() {
-
-    move(this).rotate(25).translate(-25 - offset, -45 - offset).end();
-    offset += 0.2;
-  });
 }
+
+Display.prototype._initializeCards = function() {
+  $('.card_container').each(function() {
+    move(this).rotate(25).translate(-25, -45).end();
+  });
+};
 
 Display.prototype._setHoverFunctions = function() {
   var self = this;
@@ -55,6 +57,7 @@ Display.prototype._setHoverFunctions = function() {
   });
   $(document).on('click', '#HACK', function() {
     self.game.startMockGame(true);
+    $(this).remove();
   });
 };
 
@@ -88,7 +91,7 @@ Display.prototype._setDefaults = function(board) {
         lastAngle: - Math.PI / 6,
         radius: 1.2 * cardHeight
       },
-      pile: {x: boardWidth/1.33, y: boardHeight - 0.3 * cardHeight},
+      pile: {x: boardWidth * .15, y: boardHeight - 0.3 * cardHeight},
       play: {x: boardCenter.x, y: boardCenter.y + 150},
       orientation: 0
     },
@@ -154,6 +157,15 @@ Display.prototype._addUIElements = function() {
   //  scores
   //  chips (should be on beforehand)
   //  videos
+
+  // spotlights
+  this.spotlights = {
+    $deck: $('.spotlight.deck'),
+    $player: $('.spotlight.player'),
+    $center: $('.spotlight.center')
+  };
+
+  this.spotlights.$player.css('left', this.boardWidth / 2 - this.spotlights.$player.width() / 2);
 };
 
 Display.prototype._setMoveFunctions = function() {
@@ -162,6 +174,10 @@ Display.prototype._setMoveFunctions = function() {
   // Add movement directives
   move.prototype.player = function(player){
     this.playerId = player;
+    return this;
+  };
+  move.prototype.preserveZ = function() {
+    this.preserveZIndex = true;
     return this;
   };
   move.prototype.toHand = function() {
@@ -228,7 +244,9 @@ Display.prototype._setMoveFunctions = function() {
       if (this.playerId === self.id) {
         $(this.el).children('.card').addClass('flipped');
       }
-      this.el.style.zIndex = self._globalZ++;
+      if (!this.preserveZIndex) {
+        this.el.style.zIndex = self._globalZ++;
+      }
     }
 
 
@@ -300,12 +318,36 @@ Display.prototype.gameStart = function(players) {
   for (var id in players) {
     hands.push(players[id].hand);
   }
-  async.timesSeries(13, function(i, nextSuit){
-    async.timesSeries(4, function(j, nextCard){
-      var card = hands[j][i];
-      move(self.card(card)).player(j).toHand().duration(100).end(nextCard);
-    }, nextSuit);
-  }, util.noop);
+
+  // fast shuffle
+  var offset = 0;
+  var delay = 0;
+  for (var i = 12; i >= 0; i -= 1) {
+    for (var j = 3; j >= 0; j -= 1) {
+      (function(_i, _j, _offset, _delay) {
+        setTimeout(function() {
+          move(self.card(hands[_j][_i])).rotate(25).translate(-25 - _offset, -45 - _offset).end();
+        }, _delay);
+      })(i, j, offset, delay);
+      delay += 20;
+      offset += 0.2;
+    }
+  }
+
+  function moveDeckLight() {
+    move(self.spotlights.$deck[0]).preserveZ().translate(self.boardWidth / 2, self.boardHeight / 2).scale(1.7).end();
+  }
+
+  setTimeout(function() {
+    async.timesSeries(13, function(i, nextSuit) {
+      async.timesSeries(4, function(j, nextCard) {
+        var card = hands[j][i];
+        move(self.card(card)).player(j).toHand().duration(100).end(nextCard);
+      }, nextSuit);
+    }, moveDeckLight);
+    //self.spotlights.$deck.fadeOut(8500);
+    self.spotlights.$player.fadeIn(5000);
+  }, delay + 800);
 }
 
 Display.prototype.turnStart = function(playerId) {
