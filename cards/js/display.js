@@ -8,6 +8,13 @@
   // HACK HACK HACK UNDO THIS!
   this.game = game;
   this._setHoverFunctions();
+
+  var offset = 0;
+  $('.card_container').each(function() {
+
+    move(this).rotate(25).translate(-25 - offset, -45 - offset).end();
+    offset += 0.2;
+  });
 }
 
 Display.prototype._setHoverFunctions = function() {
@@ -72,6 +79,7 @@ Display.prototype._setDefaults = function(board) {
   var cardWidth = this.CARD_SIZE.width;
   var cardHeight = this.CARD_SIZE.height;
 
+  // This is terribly hardcoded.
   this.players = [
     {
       hand: {
@@ -80,7 +88,7 @@ Display.prototype._setDefaults = function(board) {
         lastAngle: - Math.PI / 6,
         radius: 1.2 * cardHeight
       },
-      pile: {x: boardWidth/1.33, y: boardHeight},
+      pile: {x: boardWidth/1.33, y: boardHeight - 0.3 * cardHeight},
       play: {x: boardCenter.x, y: boardCenter.y + 150},
       orientation: 0
     },
@@ -88,11 +96,11 @@ Display.prototype._setDefaults = function(board) {
     {
       hand: {
         x: 0 - 0.9 * cardHeight,
-        y: boardHeight / 2 - cardHeight / 2,
+        y: boardHeight / 2 - 0.67 * cardHeight,
         lastAngle: Math.PI / 3,
         radius: 0.5 * cardHeight
       },
-      pile: {x: 0, y: boardHeight/1.33},
+      pile: {x: - 0.55 * cardHeight, y: boardHeight/1.33 - 0.5 * cardWidth},
       play: {x: boardCenter.x - 150, y: boardCenter.y},
       orientation: 90
     },
@@ -104,7 +112,7 @@ Display.prototype._setDefaults = function(board) {
         lastAngle: 5 * Math.PI / 6,
         radius: 0.5 * cardHeight
       },
-      pile: {x: boardWidth/1.33, y: 0},
+      pile: {x: boardWidth/1.33, y: - 0.7 * cardHeight},
       play: {x: boardCenter.x, y: boardCenter.y - 150},
       orientation: 180
     },
@@ -112,11 +120,11 @@ Display.prototype._setDefaults = function(board) {
     {
       hand: {
         x: boardWidth + cardWidth / 4,
-        y: boardHeight / 2 - cardHeight / 2,
+        y: boardHeight / 2 - 0.67 * cardHeight,
         lastAngle: 4 * Math.PI / 3,
         radius: 0.5 * cardHeight
       },
-      pile: {x: boardWidth, y: boardHeight/1.33},
+      pile: {x: boardWidth - 0.2 * cardHeight, y: boardHeight / 1.33 - 0.5 * cardWidth},
       play: {x: boardCenter.x + 150, y: boardCenter.y},
       orientation: 270
     }
@@ -129,16 +137,23 @@ Display.prototype._setDefaults = function(board) {
   // Post process
   for (var i = 0; i < this.players.length; i++) {
     var player = this.players[i];
-    player.pile.x -= this.CARD_SIZE.width / 2;
     player.play.x -= this.CARD_SIZE.width / 2;
-    player.pile.y -= this.CARD_SIZE.height / 2;
     player.play.y -= this.CARD_SIZE.height / 2;
 
     // Lower center & set radius for fanning.
     player.hand.angleIncrement = Math.PI / 39;
   }
 
+  this._addUIElements();
+
   this._globalZ = 5;
+};
+
+Display.prototype._addUIElements = function() {
+  // Attach:
+  //  scores
+  //  chips (should be on beforehand)
+  //  videos
 };
 
 Display.prototype._setMoveFunctions = function() {
