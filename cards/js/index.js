@@ -2,7 +2,7 @@
 $(function(){
 
 
-  display = new Display();
+  display = new Display(board, 2);
 
   var events = ['join', 'game-start', 'round-start', 'turn-start', 'turn-end', 'round-end', 'game-end'];
   async.each(events, function(event){

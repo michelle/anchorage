@@ -1,14 +1,13 @@
-﻿function Display (board) {
-
+﻿function Display(board, playerId) {
+  this.id = playerId;
   // Sets the default board parameters
-  this._setDefaults();
-
+  this._setDefaults(board);
   // Adds functions to move class so we can move cards elegantly
   this._setMoveFunctions();
 
 }
 
-Display.prototype._setDefaults = function() {
+Display.prototype._setDefaults = function(board) {
  this.CARD_SIZE = {width: 200, height: 280, scale: 0.7};
   // Generate board targets
 
@@ -50,6 +49,10 @@ Display.prototype._setDefaults = function() {
     }
   ];
 
+  if (this.id !== 0) {
+    this.players = this.players.slice(this.id, this.players.length).concat(this.players.slice(0, this.id));
+  }
+
   // Post process
   for (var i = 0; i < this.players.length; i++) {
     var player = this.players[i];
@@ -89,6 +92,11 @@ Display.prototype._setMoveFunctions = function() {
     this.scale(self.CARD_SIZE.scale);
     this.toOrientation();
     this.el.style.zIndex = self._globalZ++;
+
+    if (this.player === self.id) {
+      $(this.el).children('.card').addClass('flipped');
+    }
+
     this._end(cb);
   }
 }

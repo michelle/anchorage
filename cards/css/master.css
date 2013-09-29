@@ -78,8 +78,8 @@ h1 { color: red; font-size: 96px; }
   display: inline-block;
 }
 
-.card.flipped, .card_container:hover .card {
-  -webkit-transform: rotateY(180deg);
+.card.flipped {
+  -webkit-transform: rotateY(0deg);
 }
 
 .card_container, .front, .back {
@@ -92,6 +92,7 @@ h1 { color: red; font-size: 96px; }
   transition: 0.6s;
   -webkit-transform-style: preserve-3d;
   position: relative;
+  -webkit-transform: rotateY(180deg);
 }
 
 .front {
