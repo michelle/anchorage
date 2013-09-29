@@ -128,3 +128,7 @@ h1 { color: red; font-size: 96px; }
   height: 100%;
   overflow: hidden;
 }
+
+.in-hand {
+  cursor: pointer;
+}

@@ -1,11 +1,52 @@
-﻿function Display(board, playerId) {
+﻿function Display(board, playerId, game) {
   this.id = playerId;
   // Sets the default board parameters
   this._setDefaults(board);
   // Adds functions to move class so we can move cards elegantly
   this._setMoveFunctions();
 
+  // HACK HACK HACK UNDO THIS!
+  this.game = game;
+  this._setHoverFunctions();
 }
+
+Display.prototype._setHoverFunctions = function() {
+  var self = this;
+  $(document).on('mouseover', '.in-hand', function() {
+    var data = this.dataset['transforms'];
+    this.dataset['transformsold'] = data;
+
+    // Ugh
+    var arrData = JSON.parse(data);
+    /*
+    for (var i = 0, ii = arrData.length; i < ii; i += 1) {
+      if (arrData[i].indexOf('rotate') !== -1) {
+        arrData[i] = 'rotate(0deg)';
+      }
+    }*/
+    move(this).restore(arrData).rotate(10).translate(0, -100).end();
+  });
+
+  $(document).on('mouseout', '.in-hand', function() {
+    var data = JSON.parse(this.dataset['transformsold']);
+    move(this).restore(data).end();
+  });
+
+
+  // TODO: delurk this.
+  function toUsableCard(classname) {
+    var lurk = classname.split('-');
+    var card = {suit: lurk[0][lurk[0].length - 1], value: lurk[1][0]};
+    return card;
+  }
+  $(document).on('click', '.in-hand', function() {
+    var card = toUsableCard($(this).children('.card').attr('class'));
+    try {
+      self.game.play(card, self.game.randomPlay());
+    } catch (e) {
+    }
+  });
+};
 
 Display.prototype._setDefaults = function(board) {
  this.CARD_SIZE = {width: 200, height: 280, scale: 0.7};
@@ -21,34 +62,57 @@ Display.prototype._setDefaults = function(board) {
 
   // TODO
   this.junk = {
-    x: this.boardWidth - 100,
-    y: this.boardHeight - 100
+    x: this.boardWidth + 100,
+    y: this.boardHeight + 100
   };
+
+  var cardWidth = this.CARD_SIZE.width;
+  var cardHeight = this.CARD_SIZE.height;
 
   this.players = [
     {
-      hand: {x: boardWidth/2, y: boardHeight},
+      hand: {
+        x: boardWidth/2 - cardWidth / 2,
+        y: boardHeight + cardHeight / 2,
+        lastAngle: - Math.PI / 6,
+        radius: 1.2 * cardHeight
+      },
       pile: {x: boardWidth/1.33, y: boardHeight},
       play: {x: boardCenter.x, y: boardCenter.y + 160},
       orientation: 0
     },
 
     {
-      hand: {x: 0, y: boardHeight/2},
+      hand: {
+        x: 0 - 0.9 * cardHeight,
+        y: boardHeight / 2 - cardHeight / 2,
+        lastAngle: Math.PI / 3,
+        radius: 0.5 * cardHeight
+      },
       pile: {x: 0, y: boardHeight/1.33},
       play: {x: boardCenter.x - 160, y: boardCenter.y},
       orientation: 90
     },
 
     {
-      hand: {x: boardWidth/2, y: 0},
+      hand: {
+        x: boardWidth / 2 - cardWidth / 2,
+        y: - cardHeight,
+        lastAngle: 5 * Math.PI / 6,
+        radius: 0.5 * cardHeight
+      },
       pile: {x: boardWidth/1.33, y: 0},
       play: {x: boardCenter.x, y: boardCenter.y - 160},
       orientation: 180
     },
 
     {
-      hand: {x: boardWidth, y: boardHeight/2},
+      hand: {
+        x: boardWidth + cardWidth / 4,
+        y: boardHeight / 2 - cardHeight / 2,
+        lastAngle: 4 * Math.PI / 3,
+        radius: 0.5 * cardHeight
+      },
       pile: {x: boardWidth, y: boardHeight/1.33},
       play: {x: boardCenter.x + 160, y: boardCenter.y},
       orientation: 270
@@ -62,12 +126,13 @@ Display.prototype._setDefaults = function(board) {
   // Post process
   for (var i = 0; i < this.players.length; i++) {
     var player = this.players[i];
-    player.hand.x -= this.CARD_SIZE.width / 2;
     player.pile.x -= this.CARD_SIZE.width / 2;
     player.play.x -= this.CARD_SIZE.width / 2;
-    player.hand.y -= this.CARD_SIZE.height / 2;
     player.pile.y -= this.CARD_SIZE.height / 2;
     player.play.y -= this.CARD_SIZE.height / 2;
+
+    // Lower center & set radius for fanning.
+    player.hand.angleIncrement = Math.PI / 39;
   }
 
   this._globalZ = 5;
@@ -82,37 +147,73 @@ Display.prototype._setMoveFunctions = function() {
     return this;
   };
   move.prototype.toHand = function() {
-    return this.to(self.players[this.playerId].hand.x, self.players[this.playerId].hand.y);
+    if (this.playerId === self.id) {
+      $(this.el).addClass('in-hand');
+    }
+    var player = self.players[this.playerId];
+    var angle = player.hand.lastAngle + player.hand.angleIncrement;
+
+    var xOffset = Math.sin(angle) * player.hand.radius;
+    var yOffset = Math.cos(angle) * player.hand.radius;
+
+    var x = player.hand.x + xOffset;
+    var y = player.hand.y - yOffset;
+
+    var orientation = self.players[this.playerId].orientation;
+    var degAngle = angle * 180 / Math.PI;
+
+
+    this.offset = degAngle - orientation;
+
+    player.hand.lastAngle = angle;
+    return this.to(x, y);
   };
   move.prototype.toPile = function() {
-    $(this.el).children('.card').removeClass('in-play');
+    $(this.el).removeClass('in-play');
     $(this.el).children('.card').removeClass('flipped');
+    this.jitter = 10;
     return this.to(self.players[this.playerId].pile.x, self.players[this.playerId].pile.y);
   };
   move.prototype.toJunk = function() {
-    $(this.el).children('.card').removeClass('in-play');
+    $(this.el).removeClass('in-play');
     $(this.el).children('.card').removeClass('flipped');
     return this.to(self.junk.x, self.junk.y);
   };
   move.prototype.toPlay = function() {
-    $(this.el).children('.card').addClass('in-play');
+    $(this.el).removeClass('in-hand');
+    $(this.el).addClass('in-play');
     return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
   };
   move.prototype.toOrientation = function() {
-    return this.rotate(self.players[this.playerId].orientation);
+    var orientation = self.players[this.playerId].orientation;
+    if (this.jitter) {
+      orientation += Math.random() * 2 * this.jitter - this.jitter;
+    }
+    if (this.offset) {
+      orientation += this.offset;
+    }
+    return this.rotate(orientation);
+  };
+  move.prototype.restore = function(data) {
+    this._transforms = data;
+    this.restored = true;
+    return this;
   };
   move.prototype._end = move.prototype.end;
   move.prototype.end = function(cb) {
-    this.scale(self.CARD_SIZE.scale);
-    if (this.playerId) {
-      this.toOrientation();
+    if (!this.restored) {
+      this.scale(self.CARD_SIZE.scale);
+      if (this.playerId !== undefined) {
+        this.toOrientation();
+      }
+      if (this.playerId === self.id) {
+        $(this.el).children('.card').addClass('flipped');
+      }
+      this.el.style.zIndex = self._globalZ++;
     }
-    this.el.style.zIndex = self._globalZ++;
 
-    if (this.playerId === self.id) {
-      $(this.el).children('.card').addClass('flipped');
-    }
 
+    this.el.dataset['transforms'] = JSON.stringify(this._transforms);
     this._end(cb);
   }
 }
@@ -126,7 +227,6 @@ Display.prototype.profile = function(playerId) {
 }
 
 Display.prototype.receive = function (name, data) {
-  console.log('recieved', name, JSON.stringify(data, null, 2));
 
   // SERVER TO CLIENT EVENTS
   //
@@ -195,7 +295,7 @@ Display.prototype.turnStart = function(playerId) {
 }
 
 Display.prototype.turnEnd = function(playerId, play) {
-  this.profile(playerId).text('Guessed ' + play.call);
+  this.profile(playerId).text('Guessed ' + play.call.value);
   move(this.card(play.card)).player(playerId).toPlay().end();
 }
 
@@ -206,17 +306,17 @@ Display.prototype.handleOutcome = function(outcome) {
       for (var i = 0; i < action.cardsWon.length; i++) {
         move(this.card(action.cardsWon[i])).player(playerId).toPile().end();
       }
-      this.profile(playerId).text('Score ', action.score);
+      this.profile(playerId).text('Score ' + action.score);
     }
 
     $('.in-play').each(function() {
-      move(this.parentNode).toJunk().end();
+      move(this).toJunk().end();
     });
   }
 }
 
 Display.prototype.roundEnd = function() {
-  $('.in-play').addClass('flipped');
+  $('.in-play').children('.card').addClass('flipped');
 }
 // TEST
 /*
