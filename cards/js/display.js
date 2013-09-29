@@ -19,6 +19,12 @@ Display.prototype._setDefaults = function(board) {
   this.boardWidth = boardWidth;
   this.boardHeight = boardHeight;
 
+  // TODO
+  this.junk = {
+    x: this.boardWidth - 100,
+    y: this.boardHeight - 100
+  };
+
   this.players = [
     {
       hand: {x: boardWidth/2, y: boardHeight},
@@ -72,28 +78,38 @@ Display.prototype._setMoveFunctions = function() {
 
   // Add movement directives
   move.prototype.player = function(player){
-    this.player = player;
+    this.playerId = player;
     return this;
   };
-  move.prototype.toHand = function(){
-    return this.to(self.players[this.player].hand.x, self.players[this.player].hand.y);
+  move.prototype.toHand = function() {
+    return this.to(self.players[this.playerId].hand.x, self.players[this.playerId].hand.y);
   };
-  move.prototype.toPile = function(){
-    return this.to(self.players[this.player].pile.x, self.players[this.player].pile.y);
+  move.prototype.toPile = function() {
+    $(this.el).children('.card').removeClass('in-play');
+    $(this.el).children('.card').removeClass('flipped');
+    return this.to(self.players[this.playerId].pile.x, self.players[this.playerId].pile.y);
   };
-  move.prototype.toPlay = function(){
-    return this.to(self.players[this.player].play.x, self.players[this.player].play.y);
+  move.prototype.toJunk = function() {
+    $(this.el).children('.card').removeClass('in-play');
+    $(this.el).children('.card').removeClass('flipped');
+    return this.to(self.junk.x, self.junk.y);
   };
-  move.prototype.toOrientation = function(){
-    return this.rotate(self.players[this.player].orientation);
+  move.prototype.toPlay = function() {
+    $(this.el).children('.card').addClass('in-play');
+    return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
+  };
+  move.prototype.toOrientation = function() {
+    return this.rotate(self.players[this.playerId].orientation);
   };
   move.prototype._end = move.prototype.end;
   move.prototype.end = function(cb) {
     this.scale(self.CARD_SIZE.scale);
-    this.toOrientation();
+    if (this.playerId) {
+      this.toOrientation();
+    }
     this.el.style.zIndex = self._globalZ++;
 
-    if (this.player === self.id) {
+    if (this.playerId === self.id) {
       $(this.el).children('.card').addClass('flipped');
     }
 
@@ -110,7 +126,7 @@ Display.prototype.profile = function(playerId) {
 }
 
 Display.prototype.receive = function (name, data) {
-  console.log('recieved', name, data);
+  console.log('recieved', name, JSON.stringify(data, null, 2));
 
   // SERVER TO CLIENT EVENTS
   //
@@ -130,6 +146,7 @@ Display.prototype.receive = function (name, data) {
       this.gameStart(data);
       break;
     case 'round-start':
+      this.handleOutcome(data);
       break;
     case 'turn-start':
       this.turnStart(data.playerId);
@@ -138,9 +155,11 @@ Display.prototype.receive = function (name, data) {
       this.turnEnd(data.playerId, data.play);
       break;
     case 'round-end':
-      this.roundEnd(data);
+      this.roundEnd();
       break;
     case 'game-end':
+      this.handleOutcome(data.outcome);
+      // TODO: handle score.
       break;
 
   }
@@ -180,14 +199,24 @@ Display.prototype.turnEnd = function(playerId, play) {
   move(this.card(play.card)).player(playerId).toPlay().end();
 }
 
-Display.prototype.roundEnd = function(outcome) {
-  for (var playerId in outcome) {
-    var action = outcome[playerId];
-    for (var i = 0; i < action.cardsWon.length; i++) {
-      move(this.card(action.cardsWon[i])).player(playerId).toPile().end();
+Display.prototype.handleOutcome = function(outcome) {
+  if (outcome) {
+    for (var playerId in outcome) {
+      var action = outcome[playerId];
+      for (var i = 0; i < action.cardsWon.length; i++) {
+        move(this.card(action.cardsWon[i])).player(playerId).toPile().end();
+      }
+      this.profile(playerId).text('Score ', action.score);
     }
-    this.profile(playerId).text('Score ', action.score);
+
+    $('.in-play').each(function() {
+      move(this.parentNode).toJunk().end();
+    });
   }
+}
+
+Display.prototype.roundEnd = function() {
+  $('.in-play').addClass('flipped');
 }
 // TEST
 /*
