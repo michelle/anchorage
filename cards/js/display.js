@@ -94,7 +94,7 @@ Display.prototype._setMoveFunctions = function() {
 }
 
 Display.prototype.card = function(name) {
-  return $('.' + name)[0];
+  return document.querySelector('.' + name).parentNode;
 }
 
 Display.prototype.profile = function(playerId) {
