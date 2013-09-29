@@ -62,12 +62,13 @@ Display.prototype._setHoverFunctions = function() {
 };
 
 Display.prototype._setDefaults = function(board) {
- this.CARD_SIZE = {width: 200, height: 280, scale: 0.6};
+  this.CARD_SIZE = {width: 200, height: 280, scale: 0.6};
   // Generate board targets
 
   var boardWidth = board.clientWidth;
   var boardHeight = board.clientHeight;
   var boardCenter = {x: boardWidth/2, y: boardHeight/2};
+  this.CARD_SIZE.scale = boardHeight / 1100;
 
   this.board = board;
   this.boardWidth = boardWidth;
@@ -92,7 +93,7 @@ Display.prototype._setDefaults = function(board) {
         radius: 1.2 * cardHeight
       },
       pile: {x: boardWidth * .15, y: boardHeight - 0.3 * cardHeight},
-      play: {x: boardCenter.x, y: boardCenter.y + 150},
+      play: {x: boardCenter.x, y: boardCenter.y + this.CARD_SIZE.scale * cardWidth / 0.9},
       orientation: 0
     },
 
@@ -104,7 +105,7 @@ Display.prototype._setDefaults = function(board) {
         radius: 0.5 * cardHeight
       },
       pile: {x: - 0.55 * cardHeight, y: boardHeight/1.33 - 0.5 * cardWidth},
-      play: {x: boardCenter.x - 150, y: boardCenter.y},
+      play: {x: boardCenter.x - this.CARD_SIZE.scale * cardWidth / 0.9, y: boardCenter.y},
       orientation: 90
     },
 
@@ -116,7 +117,7 @@ Display.prototype._setDefaults = function(board) {
         radius: 0.5 * cardHeight
       },
       pile: {x: boardWidth/1.33, y: - 0.7 * cardHeight},
-      play: {x: boardCenter.x, y: boardCenter.y - 150},
+      play: {x: boardCenter.x, y: boardCenter.y - this.CARD_SIZE.scale * cardWidth / 0.9},
       orientation: 180
     },
 
@@ -128,10 +129,11 @@ Display.prototype._setDefaults = function(board) {
         radius: 0.5 * cardHeight
       },
       pile: {x: boardWidth - 0.2 * cardHeight, y: boardHeight / 1.33 - 0.5 * cardWidth},
-      play: {x: boardCenter.x + 150, y: boardCenter.y},
+      play: {x: boardCenter.x + this.CARD_SIZE.scale * cardWidth / 0.9, y: boardCenter.y},
       orientation: 270
     }
   ];
+  console.log(this.players[0].play, boardCenter);
 
   if (this.id !== 0) {
     this.players = this.players.slice(this.id, this.players.length).concat(this.players.slice(0, this.id));
@@ -304,7 +306,7 @@ Display.prototype.receive = function (name, data) {
       break;
     case 'game-end':
       this.handleOutcome(data.outcome);
-      // TODO: handle score.
+      // TODO: handle score. this.handleFinalScore(data.score);
       break;
 
   }
