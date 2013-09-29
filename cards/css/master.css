@@ -118,7 +118,9 @@ h1 { color: red; font-size: 96px; }
   display: none;
 }
 .card_container {
-
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 #board {
   width: 100%;

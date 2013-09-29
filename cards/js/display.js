@@ -94,14 +94,15 @@ Display.prototype._setMoveFunctions = function() {
 }
 
 Display.prototype.card = function(name) {
-  return document.querySelector('.'+name);
+  return $('.' + name)[0];
 }
 
 Display.prototype.profile = function(playerId) {
-  return this.profile(playerId);
+  return $('#player' + playerId);
 }
 
 Display.prototype.receive = function (name, data) {
+  console.log('recieved', name, data);
 
   // SERVER TO CLIENT EVENTS
   //
@@ -150,14 +151,14 @@ Display.prototype.join = function(playerId, info) {
 Display.prototype.gameStart = function(players) {
   var self = this;
   var hands = [];
-  for ( var id in players ) {
+  for (var id in players) {
     hands.push(players[id].hand);
   }
-  async.timesSeries(13, function(i, next){
-    async.timesSeries(4, function(j, next){
+  async.timesSeries(13, function(i, nextSuit){
+    async.timesSeries(4, function(j, nextCard){
       var card = hands[j][i];
-      move(self.card(card)).player(j).toHand().duration(100).end(next);
-    }, util.noop);
+      move(self.card(card)).player(j).toHand().duration(100).end(nextCard);
+    }, nextSuit);
   }, util.noop);
 }
 
