@@ -33,7 +33,7 @@ Display.prototype._setHoverFunctions = function() {
   });
 
 
-  // TODO: delurk this.
+  // TODO: delurk these.
   function toUsableCard(classname) {
     var lurk = classname.split('-');
     var card = {suit: lurk[0][lurk[0].length - 1], value: lurk[1][0]};
@@ -45,6 +45,9 @@ Display.prototype._setHoverFunctions = function() {
       self.game.play(card, self.game.randomPlay());
     } catch (e) {
     }
+  });
+  $(document).on('click', '#HACK', function() {
+    self.game.startMockGame(true);
   });
 };
 
@@ -78,7 +81,7 @@ Display.prototype._setDefaults = function(board) {
         radius: 1.2 * cardHeight
       },
       pile: {x: boardWidth/1.33, y: boardHeight},
-      play: {x: boardCenter.x, y: boardCenter.y + 160},
+      play: {x: boardCenter.x, y: boardCenter.y + 150},
       orientation: 0
     },
 
@@ -90,7 +93,7 @@ Display.prototype._setDefaults = function(board) {
         radius: 0.5 * cardHeight
       },
       pile: {x: 0, y: boardHeight/1.33},
-      play: {x: boardCenter.x - 160, y: boardCenter.y},
+      play: {x: boardCenter.x - 150, y: boardCenter.y},
       orientation: 90
     },
 
@@ -102,7 +105,7 @@ Display.prototype._setDefaults = function(board) {
         radius: 0.5 * cardHeight
       },
       pile: {x: boardWidth/1.33, y: 0},
-      play: {x: boardCenter.x, y: boardCenter.y - 160},
+      play: {x: boardCenter.x, y: boardCenter.y - 150},
       orientation: 180
     },
 
@@ -114,7 +117,7 @@ Display.prototype._setDefaults = function(board) {
         radius: 0.5 * cardHeight
       },
       pile: {x: boardWidth, y: boardHeight/1.33},
-      play: {x: boardCenter.x + 160, y: boardCenter.y},
+      play: {x: boardCenter.x + 150, y: boardCenter.y},
       orientation: 270
     }
   ];
@@ -182,6 +185,7 @@ Display.prototype._setMoveFunctions = function() {
   move.prototype.toPlay = function() {
     $(this.el).removeClass('in-hand');
     $(this.el).addClass('in-play');
+    this.jitter = 15;
     return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
   };
   move.prototype.toOrientation = function() {
