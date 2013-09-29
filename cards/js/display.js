@@ -68,7 +68,7 @@ Display.prototype._setDefaults = function(board) {
   var boardWidth = board.clientWidth;
   var boardHeight = board.clientHeight;
   var boardCenter = {x: boardWidth/2, y: boardHeight/2};
-  this.CARD_SIZE.scale = boardHeight / 1100;
+  this.CARD_SIZE.scale = Math.min(boardHeight / 1100, 1);
 
   this.board = board;
   this.boardWidth = boardWidth;
