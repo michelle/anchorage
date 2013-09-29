@@ -150,6 +150,7 @@ Display.prototype._setDefaults = function(board) {
   this._addUIElements();
 
   this._globalZ = 5;
+  this._globalTopZ = 200000;
 };
 
 Display.prototype._addUIElements = function() {
@@ -180,6 +181,10 @@ Display.prototype._setMoveFunctions = function() {
     this.preserveZIndex = true;
     return this;
   };
+  move.prototype.toTop = function() {
+    this.toplevel = true;
+    return this;
+  };
   move.prototype.toHand = function() {
     if (this.playerId === self.id) {
       $(this.el).addClass('in-hand');
@@ -198,6 +203,7 @@ Display.prototype._setMoveFunctions = function() {
 
 
     this.offset = degAngle - orientation;
+    this.toplevel = true;
 
     player.hand.lastAngle = angle;
     return this.to(x, y);
@@ -244,8 +250,10 @@ Display.prototype._setMoveFunctions = function() {
       if (this.playerId === self.id) {
         $(this.el).children('.card').addClass('flipped');
       }
-      if (!this.preserveZIndex) {
+      if (!this.toplevel && !this.preserveZIndex) {
         this.el.style.zIndex = self._globalZ++;
+      } else {
+        this.el.style.zIndex = self._globalTopZ++;
       }
     }
 
@@ -346,7 +354,6 @@ Display.prototype.gameStart = function(players) {
       }, nextSuit);
     }, moveDeckLight);
     //self.spotlights.$deck.fadeOut(8500);
-    self.spotlights.$player.fadeIn(5000);
   }, delay + 800);
 }
 
