@@ -168,26 +168,25 @@ h1 { color: red; font-size: 96px; }
   position: absolute;
   z-index: 100000;
   pointer-events: none;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.2);
   top: 0;
   left: 0;
 }
 
 .spotlight {
   position: absolute;
-  width: 550px;
-  height: 550px;
+  width: 1200px;
+  height: 1200px;
   background: transparent;
-  background: radial-gradient(circle, rgba(255,250,250,0.2) 0%, rgba(255,250,230,0.1) 40%, rgba(255,250,230,0.05) 50%, rgba(0,0,0,0.0) 70%);
-  -webkit-filter: contrast(300%) brightness(150%);
-  -moz-filter: contrast(300%) brightness(150%);
-  filter: contrast(300%) brightness(150%);
+  background: radial-gradient(circle, rgba(255,250,220,0.2) 10%, rgba(255,250,230,0.05) 40%, rgba(0,0,0,0.0) 70%);
+  -webkit-filter: brightness(200%);
+  -moz-filter: brightness(200%);
+  filter: brightness(200%);
   pointer-events: none;
   z-index: 100001;
 }
 
 .spotlight.deck {
-  left: -275px;
-  top: -275px;
+  left: -600px;
+  top: -600px;
 }
-

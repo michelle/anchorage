@@ -1,5 +1,6 @@
-﻿function Display(board, playerId, game) {
-  this.id = playerId;
+﻿function Display(board, name) {
+  EventEmitter.call(this);
+
   // Sets the default board parameters
   this._setDefaults(board);
   // Adds functions to move class so we can move cards elegantly
@@ -8,10 +9,14 @@
   this._initializeCards();
   this._addUIElements();
 
-  // HACK HACK HACK UNDO THIS!
-  this.game = game;
   this._setHoverFunctions();
+
+  // So I can identify myself later.
+  this.secret = Math.random();
+  this.name = name;
 }
+
+util.inherits(Display, EventEmitter);
 
 Display.prototype._initializeCards = function() {
   $('.card_container').each(function() {
@@ -49,14 +54,13 @@ Display.prototype._setHoverFunctions = function() {
     return card;
   }
   $(document).on('click', '.in-hand', function() {
-    var card = toUsableCard($(this).children('.card').attr('class'));
-    try {
-      self.game.play(card, self.game.randomPlay());
-    } catch (e) {
+    if (self.canPlayCard) {
+      var card = toUsableCard($(this).children('.card').attr('class'));
+      self.emit('play', {playerId: self.id, call: {value: 1}, card: card});
     }
   });
   $(document).on('click', '#HACK', function() {
-    self.game.startMockGame(true);
+    self.emit('start');
     $(this).remove();
   });
 };
@@ -133,11 +137,6 @@ Display.prototype._setDefaults = function(board) {
       orientation: 270
     }
   ];
-  console.log(this.players[0].play, boardCenter);
-
-  if (this.id !== 0) {
-    this.players = this.players.slice(this.id, this.players.length).concat(this.players.slice(0, this.id));
-  }
 
   // Post process
   for (var i = 0; i < this.players.length; i++) {
@@ -249,12 +248,12 @@ Display.prototype._setMoveFunctions = function() {
       if (this.playerId !== undefined) {
         this.toOrientation();
       }
-      if (this.playerId === self.id) {
+      if (this.playerId === self.id && self.id !== undefined) {
         $(this.el).children('.card').addClass('flipped');
       }
       if (!this.toplevel && !this.preserveZIndex) {
         this.el.style.zIndex = self._globalZ++;
-      } else {
+      } else if (this.toplevel) {
         this.el.style.zIndex = self._globalTopZ++;
       }
     }
@@ -319,6 +318,12 @@ Display.prototype.receive = function (name, data) {
 }
 
 Display.prototype.join = function(playerId, info) {
+  if (info._secret === this.secret) {
+    this.id = playerId;
+    if (this.id !== 0) {
+      this.players = this.players.slice(this.id, this.players.length).concat(this.players.slice(0, this.id));
+    }
+  }
   this.profile(playerId).text(info.name);
 };
 
@@ -360,11 +365,17 @@ Display.prototype.gameStart = function(players) {
 }
 
 Display.prototype.turnStart = function(playerId) {
+  if (this.id === playerId) {
+    this.canPlayCard = true;
+  }
   $('.player').removeClass('in-turn');
   this.profile(playerId).addClass('in-turn');
 }
 
 Display.prototype.turnEnd = function(playerId, play) {
+  if (this.id === playerId) {
+    this.canPlayCard = false;
+  }
   this.profile(playerId).text('Guessed ' + play.call.value);
   move(this.card(play.card)).player(playerId).toPlay().end();
 }
