@@ -2,20 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Helveticards - 100% CSS playing cards</title>
+    <title>Anchorage</title>
 
     <link rel="stylesheet" href="css/master.css" media="all" />
 
   </head>
   <body>
 
+  <div class="cover"></div>
+  <div class="spotlight deck"></div>
+
+    <div class="players">
+      <div class="player0" id="player0"></div>
+      <div class="player1" id="player1"></div>
+      <div class="player2" id="player2"></div>
+      <div class="player3" id="player3"></div>
+    </div>
+
     <div id="board"></div>
 
+    <div id="HACK"></div>
+
+    <div class="chips">
+      <div class="chip call-0"></div>
+      <div class="chip call-1"></div>
+      <div class="chip call-2"></div>
+      <div class="chip call-3"></div>
+      <div class="chip call-2-s"></div>
+      <div class="chip call-3-s"></div>
+      <div class="chip call-4-s"></div>
+    </div>
 
 
     <!-- All of the cards -->
     <div class="card_container">
-      <div class="card two">
+      <div class="card c-2">
         <div class="front">
           <div class="corner top">
             <span class="number">2</span>
@@ -36,7 +57,7 @@
 
 
       <div class="card_container">
-        <div class="card three">
+        <div class="card c-3">
         <div class="front">
           <div class="corner top">
             <span class="number">3</span>
@@ -57,7 +78,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card four">
+        <div class="card c-4">
         <div class="front">
           <div class="corner top">
             <span class="number">4</span>
@@ -79,7 +100,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card five">
+        <div class="card c-5">
         <div class="front">
           <div class="corner top">
             <span class="number">5</span>
@@ -102,7 +123,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card six">
+        <div class="card c-6">
         <div class="front">
           <div class="corner top">
             <span class="number">6</span>
@@ -126,7 +147,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card seven">
+        <div class="card c-7">
         <div class="front">
           <div class="corner top">
             <span class="number">7</span>
@@ -151,7 +172,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card eight">
+        <div class="card c-8">
         <div class="front">
           <div class="corner top">
             <span class="number">8</span>
@@ -177,7 +198,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card nine">
+        <div class="card c-9">
         <div class="front">
           <div class="corner top">
             <span class="number">9</span>
@@ -205,7 +226,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card ten">
+        <div class="card c-0">
         <div class="front">
           <div class="corner top">
             <span class="number">10</span>
@@ -234,7 +255,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card jack">
+        <div class="card c-j">
         <div class="front">
           <div class="corner top">
             <span class="number">J</span>
@@ -253,7 +274,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card queen">
+        <div class="card c-q">
         <div class="front">
           <div class="corner top">
             <span class="number">Q</span>
@@ -272,7 +293,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card king">
+        <div class="card c-k">
         <div class="front">
           <div class="corner top">
             <span class="number">K</span>
@@ -291,7 +312,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card ace">
+        <div class="card c-a">
         <div class="front">
           <div class="corner top">
             <span class="number">A</span>
@@ -310,7 +331,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond two">
+        <div class="card diamond d-2">
         <div class="front">
           <div class="corner top">
             <span class="number">2</span>
@@ -330,7 +351,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond three">
+        <div class="card diamond d-3">
         <div class="front">
           <div class="corner top">
             <span class="number">3</span>
@@ -351,7 +372,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond four">
+        <div class="card diamond d-4">
         <div class="front">
           <div class="corner top">
             <span class="number">4</span>
@@ -373,7 +394,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond five">
+        <div class="card diamond d-5">
         <div class="front">
           <div class="corner top">
             <span class="number">5</span>
@@ -396,7 +417,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond six">
+        <div class="card diamond d-6">
         <div class="front">
           <div class="corner top">
             <span class="number">6</span>
@@ -420,7 +441,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond seven">
+        <div class="card diamond d-7">
         <div class="front">
           <div class="corner top">
             <span class="number">7</span>
@@ -445,7 +466,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond eight">
+        <div class="card diamond d-8">
         <div class="front">
           <div class="corner top">
             <span class="number">8</span>
@@ -471,7 +492,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond nine">
+        <div class="card diamond d-9">
         <div class="front">
           <div class="corner top">
             <span class="number">9</span>
@@ -499,7 +520,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond ten">
+        <div class="card diamond d-0">
         <div class="front">
           <div class="corner top">
             <span class="number">10</span>
@@ -528,7 +549,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond jack">
+        <div class="card diamond d-j">
         <div class="front">
           <div class="corner top">
             <span class="number">J</span>
@@ -547,7 +568,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond queen">
+        <div class="card diamond d-q">
         <div class="front">
           <div class="corner top">
             <span class="number">Q</span>
@@ -566,7 +587,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond king">
+        <div class="card diamond d-k">
         <div class="front">
           <div class="corner top">
             <span class="number">K</span>
@@ -585,7 +606,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card diamond ace">
+        <div class="card diamond d-a">
         <div class="front">
           <div class="corner top">
             <span class="number">A</span>
@@ -604,7 +625,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card two">
+        <div class="card s-2">
         <div class="front">
           <div class="corner top">
             <span class="number">2</span>
@@ -625,7 +646,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card three">
+        <div class="card s-3">
         <div class="front">
           <div class="corner top">
             <span class="number">3</span>
@@ -646,7 +667,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card four">
+        <div class="card s-4">
         <div class="front">
           <div class="corner top">
             <span class="number">4</span>
@@ -668,7 +689,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card five">
+        <div class="card s-5">
         <div class="front">
           <div class="corner top">
             <span class="number">5</span>
@@ -691,7 +712,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card six">
+        <div class="card s-6">
         <div class="front">
           <div class="corner top">
             <span class="number">6</span>
@@ -715,7 +736,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card seven">
+        <div class="card s-7">
         <div class="front">
           <div class="corner top">
             <span class="number">7</span>
@@ -740,7 +761,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card eight">
+        <div class="card s-8">
         <div class="front">
           <div class="corner top">
             <span class="number">8</span>
@@ -766,7 +787,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card nine">
+        <div class="card s-9">
         <div class="front">
           <div class="corner top">
             <span class="number">9</span>
@@ -794,7 +815,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card ten">
+        <div class="card s-0">
         <div class="front">
           <div class="corner top">
             <span class="number">10</span>
@@ -823,7 +844,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card jack">
+        <div class="card s-j">
         <div class="front">
           <div class="corner top">
             <span class="number">J</span>
@@ -842,7 +863,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card queen">
+        <div class="card s-q">
         <div class="front">
           <div class="corner top">
             <span class="number">Q</span>
@@ -861,7 +882,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card king">
+        <div class="card s-k">
         <div class="front">
           <div class="corner top">
             <span class="number">K</span>
@@ -880,7 +901,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card ace">
+        <div class="card s-a">
         <div class="front">
           <div class="corner top">
             <span class="number">A</span>
@@ -899,7 +920,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart two">
+        <div class="card heart h-2">
         <div class="front">
           <div class="corner top">
             <span class="number">2</span>
@@ -919,7 +940,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart three">
+        <div class="card heart h-3">
         <div class="front">
           <div class="corner top">
             <span class="number">3</span>
@@ -940,7 +961,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart four">
+        <div class="card heart h-4">
         <div class="front">
           <div class="corner top">
             <span class="number">4</span>
@@ -962,7 +983,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart five">
+        <div class="card heart h-5">
         <div class="front">
           <div class="corner top">
             <span class="number">5</span>
@@ -985,7 +1006,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart six">
+        <div class="card heart h-6">
         <div class="front">
           <div class="corner top">
             <span class="number">6</span>
@@ -1009,7 +1030,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart seven">
+        <div class="card heart h-7">
         <div class="front">
           <div class="corner top">
             <span class="number">7</span>
@@ -1034,7 +1055,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart eight">
+        <div class="card heart h-8">
         <div class="front">
           <div class="corner top">
             <span class="number">8</span>
@@ -1060,7 +1081,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart nine">
+        <div class="card heart h-9">
         <div class="front">
           <div class="corner top">
             <span class="number">9</span>
@@ -1088,7 +1109,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart ten">
+        <div class="card heart h-0">
         <div class="front">
           <div class="corner top">
             <span class="number">10</span>
@@ -1117,7 +1138,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart jack">
+        <div class="card heart h-j">
         <div class="front">
           <div class="corner top">
             <span class="number">J</span>
@@ -1136,7 +1157,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart queen">
+        <div class="card heart h-q">
         <div class="front">
           <div class="corner top">
             <span class="number">Q</span>
@@ -1155,7 +1176,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart king">
+        <div class="card heart h-k">
         <div class="front">
           <div class="corner top">
             <span class="number">K</span>
@@ -1174,7 +1195,7 @@
       </div>
 
       <div class="card_container">
-        <div class="card heart ace">
+        <div class="card heart h-a">
         <div class="front">
           <div class="corner top">
             <span class="number">A</span>
@@ -1191,12 +1212,15 @@
           <div class="back"></div>
         </div>
       </div>
-
+    <script src="js/jquery.min.js"></script>
+    <script src="../lib/game/events.js"></script>
+    <script src="../lib/game/util.js"></script>
     <script src="js/async.js"></script>
     <script src="js/move.js"></script>
     <script src="js/display.js"></script>
     <script src="../lib/game/deck.js"></script>
     <script src="../lib/game/player.js"></script>
     <script src="../lib/game/game.js"></script>
+    <script src="js/index.js"></script>
   </body>
 </html>

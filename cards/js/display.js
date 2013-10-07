@@ -1,42 +1,139 @@
-﻿function Display (board) {
+﻿function Display(board, name) {
+  EventEmitter.call(this);
 
-  this.CARD_SIZE = {width: 200, height: 280, scale: 0.7};
+  // Sets the default board parameters
+  this._setDefaults(board);
+  // Adds functions to move class so we can move cards elegantly
+  this._setMoveFunctions();
+
+  this._initializeCards();
+  this._addUIElements();
+
+  this._setHoverFunctions();
+
+  // So I can identify myself later.
+  this.secret = Math.random();
+  this.name = name;
+}
+
+util.inherits(Display, EventEmitter);
+
+Display.prototype._initializeCards = function() {
+  $('.card_container').each(function() {
+    move(this).rotate(25).translate(-25, -45).end();
+  });
+};
+
+Display.prototype._setHoverFunctions = function() {
+  var self = this;
+  $(document).on('mouseover', '.in-hand', function() {
+    var data = this.dataset['transforms'];
+    this.dataset['transformsold'] = data;
+
+    // Ugh
+    var arrData = JSON.parse(data);
+    /*
+    for (var i = 0, ii = arrData.length; i < ii; i += 1) {
+      if (arrData[i].indexOf('rotate') !== -1) {
+        arrData[i] = 'rotate(0deg)';
+      }
+    }*/
+    move(this).restore(arrData).rotate(10).translate(0, -100).end();
+  });
+
+  $(document).on('mouseout', '.in-hand', function() {
+    var data = JSON.parse(this.dataset['transformsold']);
+    move(this).restore(data).end();
+  });
+
+
+  // TODO: delurk these.
+  function toUsableCard(classname) {
+    var lurk = classname.split('-');
+    var card = {suit: lurk[0][lurk[0].length - 1], value: lurk[1][0]};
+    return card;
+  }
+  $(document).on('click', '.in-hand', function() {
+    if (self.canPlayCard) {
+      var card = toUsableCard($(this).children('.card').attr('class'));
+      self.emit('play', {playerId: self.id, call: {value: 1}, card: card});
+    }
+  });
+  $(document).on('click', '#HACK', function() {
+    self.emit('start');
+    $(this).remove();
+  });
+};
+
+Display.prototype._setDefaults = function(board) {
+  this.CARD_SIZE = {width: 200, height: 280, scale: 0.6};
   // Generate board targets
 
   var boardWidth = board.clientWidth;
   var boardHeight = board.clientHeight;
   var boardCenter = {x: boardWidth/2, y: boardHeight/2};
+  this.CARD_SIZE.scale = Math.min(boardHeight / 1100, 1);
 
   this.board = board;
   this.boardWidth = boardWidth;
   this.boardHeight = boardHeight;
 
+  // TODO
+  this.junk = {
+    x: this.boardWidth + 100,
+    y: this.boardHeight + 100
+  };
+
+  var cardWidth = this.CARD_SIZE.width;
+  var cardHeight = this.CARD_SIZE.height;
+
+  // This is terribly hardcoded.
   this.players = [
     {
-      hand: {x: boardWidth/2, y: boardHeight},
-      pile: {x: boardWidth/1.33, y: boardHeight},
-      play: {x: boardCenter.x, y: boardCenter.y + 160},
+      hand: {
+        x: boardWidth/2 - cardWidth / 2,
+        y: boardHeight + cardHeight / 2,
+        lastAngle: - Math.PI / 6,
+        radius: 1.2 * cardHeight
+      },
+      pile: {x: boardWidth * .15, y: boardHeight - 0.3 * cardHeight},
+      play: {x: boardCenter.x, y: boardCenter.y + this.CARD_SIZE.scale * cardWidth / 0.9},
       orientation: 0
     },
 
     {
-      hand: {x: 0, y: boardHeight/2},
-      pile: {x: 0, y: boardHeight/1.33},
-      play: {x: boardCenter.x - 160, y: boardCenter.y},
+      hand: {
+        x: 0 - 0.9 * cardHeight,
+        y: boardHeight / 2 - 0.67 * cardHeight,
+        lastAngle: Math.PI / 3,
+        radius: 0.5 * cardHeight
+      },
+      pile: {x: - 0.55 * cardHeight, y: boardHeight/1.33 - 0.5 * cardWidth},
+      play: {x: boardCenter.x - this.CARD_SIZE.scale * cardWidth / 0.9, y: boardCenter.y},
       orientation: 90
     },
 
     {
-      hand: {x: boardWidth/2, y: 0},
-      pile: {x: boardWidth/1.33, y: 0},
-      play: {x: boardCenter.x, y: boardCenter.y - 160},
+      hand: {
+        x: boardWidth / 2 - cardWidth / 2,
+        y: - cardHeight,
+        lastAngle: 5 * Math.PI / 6,
+        radius: 0.5 * cardHeight
+      },
+      pile: {x: boardWidth/1.33, y: - 0.7 * cardHeight},
+      play: {x: boardCenter.x, y: boardCenter.y - this.CARD_SIZE.scale * cardWidth / 0.9},
       orientation: 180
     },
 
     {
-      hand: {x: boardWidth, y: boardHeight/2},
-      pile: {x: boardWidth, y: boardHeight/1.33},
-      play: {x: boardCenter.x + 160, y: boardCenter.y},
+      hand: {
+        x: boardWidth + cardWidth / 4,
+        y: boardHeight / 2 - 0.67 * cardHeight,
+        lastAngle: 4 * Math.PI / 3,
+        radius: 0.5 * cardHeight
+      },
+      pile: {x: boardWidth - 0.2 * cardHeight, y: boardHeight / 1.33 - 0.5 * cardWidth},
+      play: {x: boardCenter.x + this.CARD_SIZE.scale * cardWidth / 0.9, y: boardCenter.y},
       orientation: 270
     }
   ];
@@ -44,51 +141,266 @@
   // Post process
   for (var i = 0; i < this.players.length; i++) {
     var player = this.players[i];
-    player.hand.x -= this.CARD_SIZE.width / 2;
-    player.pile.x -= this.CARD_SIZE.width / 2;
     player.play.x -= this.CARD_SIZE.width / 2;
-    player.hand.y -= this.CARD_SIZE.height / 2;
-    player.pile.y -= this.CARD_SIZE.height / 2;
     player.play.y -= this.CARD_SIZE.height / 2;
+
+    // Lower center & set radius for fanning.
+    player.hand.angleIncrement = Math.PI / 39;
   }
 
-  var globalZ = 5;
+  this._addUIElements();
 
+  this._globalZ = 5;
+  this._globalTopZ = 200000;
+};
+
+Display.prototype._addUIElements = function() {
+  // Attach:
+  //  scores
+  //  chips (should be on beforehand)
+  //  videos
+
+  // spotlights
+  this.spotlights = {
+    $deck: $('.spotlight.deck'),
+    $player: $('.spotlight.player'),
+    $center: $('.spotlight.center')
+  };
+
+  this.spotlights.$player.css('left', this.boardWidth / 2 - this.spotlights.$player.width() / 2);
+};
+
+Display.prototype._setMoveFunctions = function() {
   var self = this;
 
   // Add movement directives
   move.prototype.player = function(player){
-    this.player = player;
+    this.playerId = player;
     return this;
   };
-  move.prototype.toHand = function(){
-    return this.to(self.players[this.player].hand.x, self.players[this.player].hand.y);
+  move.prototype.preserveZ = function() {
+    this.preserveZIndex = true;
+    return this;
   };
-  move.prototype.toPile = function(){
-    return this.to(self.players[this.player].pile.x, self.players[this.player].pile.y);
+  move.prototype.toTop = function() {
+    this.toplevel = true;
+    return this;
   };
-  move.prototype.toPlay = function(){
-    return this.to(self.players[this.player].play.x, self.players[this.player].play.y);
+  move.prototype.toHand = function() {
+    if (this.playerId === self.id) {
+      $(this.el).addClass('in-hand');
+    }
+    var player = self.players[this.playerId];
+    var angle = player.hand.lastAngle + player.hand.angleIncrement;
+
+    var xOffset = Math.sin(angle) * player.hand.radius;
+    var yOffset = Math.cos(angle) * player.hand.radius;
+
+    var x = player.hand.x + xOffset;
+    var y = player.hand.y - yOffset;
+
+    var orientation = self.players[this.playerId].orientation;
+    var degAngle = angle * 180 / Math.PI;
+
+
+    this.offset = degAngle - orientation;
+    this.toplevel = true;
+
+    player.hand.lastAngle = angle;
+    return this.to(x, y);
   };
-  move.prototype.toOrientation = function(){
-    return this.rotate(self.players[this.player].orientation);
+  move.prototype.toPile = function() {
+    $(this.el).removeClass('in-play');
+    $(this.el).children('.card').removeClass('flipped');
+    this.jitter = 10;
+    return this.to(self.players[this.playerId].pile.x, self.players[this.playerId].pile.y);
+  };
+  move.prototype.toJunk = function() {
+    $(this.el).removeClass('in-play');
+    $(this.el).children('.card').removeClass('flipped');
+    return this.to(self.junk.x, self.junk.y);
+  };
+  move.prototype.toPlay = function() {
+    $(this.el).removeClass('in-hand');
+    $(this.el).addClass('in-play');
+    this.jitter = 15;
+    return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
+  };
+  move.prototype.toOrientation = function() {
+    var orientation = self.players[this.playerId].orientation;
+    if (this.jitter) {
+      orientation += Math.random() * 2 * this.jitter - this.jitter;
+    }
+    if (this.offset) {
+      orientation += this.offset;
+    }
+    return this.rotate(orientation);
+  };
+  move.prototype.restore = function(data) {
+    this._transforms = data;
+    this.restored = true;
+    return this;
   };
   move.prototype._end = move.prototype.end;
   move.prototype.end = function(cb) {
-    this.scale(self.CARD_SIZE.scale);
-    this.toOrientation();
-    this.el.style.zIndex = globalZ++;
+    if (!this.restored) {
+      this.scale(self.CARD_SIZE.scale);
+      if (this.playerId !== undefined) {
+        this.toOrientation();
+      }
+      if (this.playerId === self.id && self.id !== undefined) {
+        $(this.el).children('.card').addClass('flipped');
+      }
+      if (!this.toplevel && !this.preserveZIndex) {
+        this.el.style.zIndex = self._globalZ++;
+      } else if (this.toplevel) {
+        this.el.style.zIndex = self._globalTopZ++;
+      }
+    }
+
+
+    this.el.dataset['transforms'] = JSON.stringify(this._transforms);
     this._end(cb);
   }
 }
 
+Display.prototype.card = function(name) {
+  return document.querySelector('.' + name).parentNode;
+}
 
+Display.prototype.profile = function(playerId) {
+  return $('#player' + playerId);
+}
 
+Display.prototype.receive = function (name, data) {
 
+  // SERVER TO CLIENT EVENTS
+  //
+  // join
+  // game-start
+  // round-start
+  // turn-start
+  // turn-end
+  // round-end
+  // game-end
+  //
+  switch (name) {
+    case 'join':
+      this.join(data.playerId, data.info);
+      break;
+    case 'game-start':
+      this.gameStart(data);
+      break;
+    case 'round-start':
+      this.handleOutcome(data);
+      break;
+    case 'turn-start':
+      this.turnStart(data.playerId);
+      break;
+    case 'turn-end':
+      this.turnEnd(data.playerId, data.play);
+      break;
+    case 'round-end':
+      this.roundEnd();
+      break;
+    case 'game-end':
+      this.handleOutcome(data.outcome);
+      // TODO: handle score. this.handleFinalScore(data.score);
+      break;
 
+  }
 
+  // CLIENT TO SERVER EVENTS
+  // join
+  // play
+  //
+
+}
+
+Display.prototype.join = function(playerId, info) {
+  if (info._secret === this.secret) {
+    this.id = playerId;
+    if (this.id !== 0) {
+      this.players = this.players.slice(this.id, this.players.length).concat(this.players.slice(0, this.id));
+    }
+  }
+  this.profile(playerId).text(info.name);
+};
+
+Display.prototype.gameStart = function(players) {
+  var self = this;
+  var hands = [];
+  for (var id in players) {
+    hands.push(players[id].hand);
+  }
+
+  // fast shuffle
+  var offset = 0;
+  var delay = 0;
+  for (var i = 12; i >= 0; i -= 1) {
+    for (var j = 3; j >= 0; j -= 1) {
+      (function(_i, _j, _offset, _delay) {
+        setTimeout(function() {
+          move(self.card(hands[_j][_i])).rotate(25).translate(-25 - _offset, -45 - _offset).end();
+        }, _delay);
+      })(i, j, offset, delay);
+      delay += 20;
+      offset += 0.2;
+    }
+  }
+
+  function moveDeckLight() {
+    move(self.spotlights.$deck[0]).preserveZ().translate(self.boardWidth / 2, self.boardHeight / 2).scale(1.7).end();
+  }
+
+  setTimeout(function() {
+    async.timesSeries(13, function(i, nextSuit) {
+      async.timesSeries(4, function(j, nextCard) {
+        var card = hands[j][i];
+        move(self.card(card)).player(j).toHand().duration(100).end(nextCard);
+      }, nextSuit);
+    }, moveDeckLight);
+    //self.spotlights.$deck.fadeOut(8500);
+  }, delay + 800);
+}
+
+Display.prototype.turnStart = function(playerId) {
+  if (this.id === playerId) {
+    this.canPlayCard = true;
+  }
+  $('.player').removeClass('in-turn');
+  this.profile(playerId).addClass('in-turn');
+}
+
+Display.prototype.turnEnd = function(playerId, play) {
+  if (this.id === playerId) {
+    this.canPlayCard = false;
+  }
+  this.profile(playerId).text('Guessed ' + play.call.value);
+  move(this.card(play.card)).player(playerId).toPlay().end();
+}
+
+Display.prototype.handleOutcome = function(outcome) {
+  if (outcome) {
+    for (var playerId in outcome) {
+      var action = outcome[playerId];
+      for (var i = 0; i < action.cardsWon.length; i++) {
+        move(this.card(action.cardsWon[i])).player(playerId).toPile().end();
+      }
+      this.profile(playerId).text('Score ' + action.score);
+    }
+
+    $('.in-play').each(function() {
+      move(this).toJunk().end();
+    });
+  }
+}
+
+Display.prototype.roundEnd = function() {
+  $('.in-play').children('.card').addClass('flipped');
+}
 // TEST
-
+/*
 var i = 0;
 
 function rand (id) {
@@ -120,3 +432,4 @@ function fakePlay() {
 function randCard(j) {
   return '#card-' + (Math.floor(Math.random() * 13) * 4 + (j || 0));
 }
+*/
