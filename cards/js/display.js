@@ -188,7 +188,7 @@ Display.prototype._setDefaults = function(board) {
   this.chipDisplay = [];
   var chipMargin = -15;
   var chipVerticalOffset = 30;
-  var chipWidth = this.CHIP_SIZE.width + chipMargin;
+  var chipWidth = (this.CHIP_SIZE.width + chipMargin) * this.CARD_SIZE.scale;
   var horizontalOffset = chipWidth * 7 / 2;
   for (var i = 0; i < 7; i++) {
     this.chipDisplay.push({
@@ -289,18 +289,18 @@ Display.prototype._setMoveFunctions = function() {
     this.toplevel = true;
     $(this.el).addClass('in-play-chip');
     this.jitter = 15;
-    return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
+    return this.to(self.players[this.playerId].play.x + 100, self.players[this.playerId].play.y + 100);
   };
   move.prototype.toChipShow = function(index) {
     // Display chips to select from
     $(this.el).addClass('in-show-chip');
     this.toplevel = true;
-    return this.to(self.chipDisplay[index].x, self.chipDisplay[index].y);
+    return this.to(self.chipDisplay[index].x + 100, self.chipDisplay[index].y + 100);
   }
   move.prototype.toChipHome = function() {
     $(this.el).removeClass('in-show-chip');
     $(this.el).removeClass('in-play-chip');
-    return this.to(self.players[this.playerId].hand.x, self.players[this.playerId].hand.y);
+    return this.to(self.players[this.playerId].hand.x + 100, self.players[this.playerId].hand.y + 100);
   };
   move.prototype.toOrientation = function() {
     var orientation = self.players[this.playerId].orientation;
@@ -494,7 +494,7 @@ Display.prototype.handleOutcome = function(outcome) {
       move(this).toJunk().end();
     });
     $('.in-play-chip').each(function() {
-      var player = this.dataset.player || self.id; // The owning player of chip is either in dataset or is the current player
+      var player = parseInt(this.dataset.player, 10) || self.id; // The owning player of chip is either in dataset or is the current player
       move(this).player(player).toChipHome().end();
     });
   }
