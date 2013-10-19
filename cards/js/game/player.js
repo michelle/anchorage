@@ -1,7 +1,7 @@
 function Player(id) {
   this.id = id;
   this.hand = [];
-  this.nghand = {}; // card => ng-card
+  // this.nghand = {}; // card => ng-card
   // ng-card contains metadata for drawing the card
   // see deck.js
   this.won = [];
@@ -13,7 +13,7 @@ Player.prototype.play = function(card) {
     if (card.value == this.hand[i].value &&
       card.suit == this.hand[i].suit) {
       this.hand.splice(i, 1);
-      this.updateAngularHand();
+      //this.updateAngularHand();
       return true;
     }
   }
@@ -39,23 +39,23 @@ Player.prototype.sortHand = function() {
       return Deck.suits.indexOf(a.suit) - Deck.suits.indexOf(b.suit);
     }
   });
-  this.updateAngularHand();
+  //this.updateAngularHand();
 }
 
 // Updating all the cards every time is really slow...
 // TODO: Make faster
-Player.prototype.updateAngularHand = function() {
-  this.nghand = []
-  for (var i = 0; i < this.hand.length; ++i)
-  {
-    var ngcard = Deck.cardToAngularCard(this.hand[i]);
-    ngcard.playerid = this.id;
-    // Probably unnecessary
-    ngcard.cardindex = i;
-    ngcard.totalcards = this.hand.length;
-    this.nghand.push(ngcard);
-  }
-}
+// Player.prototype.updateAngularHand = function() {
+//   this.nghand = []
+//   for (var i = 0; i < this.hand.length; ++i)
+//   {
+//     var ngcard = Deck.cardToAngularCard(this.hand[i]);
+//     ngcard.playerid = this.id;
+//     // Probably unnecessary
+//     ngcard.cardindex = i;
+//     ngcard.totalcards = this.hand.length;
+//     this.nghand.push(ngcard);
+//   }
+// }
 
 // debug
 Player.prototype.dump = function() {

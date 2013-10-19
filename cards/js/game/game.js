@@ -33,7 +33,7 @@ Game.MAX_PLAYERS = 4;
 Game.prototype.start = function() {
   // We'll strictly enforce 4 players for now.
   if (this.players.length !== 4) {
-    throw new Error('Cannot start game without exactly 4 players.');
+    throw new Error('Cannot start game without exactly 4 players. Had ' + this.players.length + ' players');
   }
   this.started = true;
 
@@ -316,7 +316,7 @@ Game.prototype.startMockGame = function(autoRound) {
 
 Game.prototype.joinRandom = function(delay) {
   delay = delay || 500; // ms delay.
-  var randNames = ['Dan', 'Michelle'];
+  var randNames = ['Dan', 'Michelle', 'Eric', 'Daiwei'];
   var randomPlayer = this.join({name: randNames[Math.floor(Math.random() * randNames.length)]});
 
   var self = this;
