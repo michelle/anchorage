@@ -1,4 +1,4 @@
-﻿function Display(board, name) {
+﻿function Display(board, name, id) {
   EventEmitter.call(this);
 
   // Sets the default board parameters
@@ -12,7 +12,7 @@
   this._setHoverFunctions();
   this._setActionHandlers();
   // So I can identify myself later.
-  this.secret = Math.random();
+  this.id = id;
   this.name = name;
 }
 
@@ -89,12 +89,12 @@ Display.prototype._setActionHandlers = function() {
       var val = this.dataset.val;
       self.selectedCall = {value: parseInt(val[0], 10), special: val[1] == 's'};
       $('.in-show-chip').each(function(){
-        move(this).player(self.id).toChipHome().end();
+        move(this).player(self.playerId).toChipHome().end();
       });
       if (self.selectedCard) {
         self.sendMove();
       }
-      move(this).player(self.id).toChipPlay().end();
+      move(this).player(self.playerId).toChipPlay().end();
     }
   });
 
@@ -105,7 +105,7 @@ Display.prototype._setActionHandlers = function() {
 };
 
 Display.prototype.sendMove = function() {
-  this.emit('play', {playerId: this.id, call: this.selectedCall, card: this.selectedCard});
+  this.emit('play', {playerId: this.playerId, call: this.selectedCall, card: this.selectedCard});
   this._unselectAllCards();
   this.canPlayCard = false;
 };
@@ -246,7 +246,7 @@ Display.prototype._setMoveFunctions = function() {
     return this;
   };
   move.prototype.toHand = function() {
-    if (this.playerId === self.id) {
+    if (this.playerId === self.playerId) {
       $(this.el).addClass('in-hand');
     }
     var player = self.players[this.playerId];
@@ -324,7 +324,7 @@ Display.prototype._setMoveFunctions = function() {
       if (this.playerId !== undefined) {
         this.toOrientation();
       }
-      if (this.playerId === self.id && self.id !== undefined) {
+      if (this.playerId === self.playerId && self.playerId !== undefined) {
         $(this.el).children('.card').addClass('flipped');
       }
       if (!this.toplevel && !this.preserveZIndex) {
@@ -400,10 +400,10 @@ Display.prototype.receive = function (name, data) {
 }
 
 Display.prototype.join = function(playerId, info) {
-  if (info._secret === this.secret) {
-    this.id = playerId;
-    if (this.id !== 0) {
-      this.players = this.players.slice(this.id, this.players.length).concat(this.players.slice(0, this.id));
+  if (info.id === this.id) {
+    this.playerId = playerId;
+    if (this.playerId !== 0) {
+      this.players = this.players.slice(this.playerId, this.players.length).concat(this.players.slice(0, this.playerId));
     }
   }
   this.profile(playerId).text(info.name);
@@ -447,7 +447,7 @@ Display.prototype.gameStart = function(players) {
 }
 
 Display.prototype.turnStart = function(playerId) {
-  if (this.id === playerId) {
+  if (this.playerId === playerId) {
     this.canPlayCard = true;
     // Show all the chips
     $('.call-button').each(function(i){
@@ -459,7 +459,7 @@ Display.prototype.turnStart = function(playerId) {
 }
 
 Display.prototype.turnEnd = function(playerId, play) {
-  if (this.id === playerId) {
+  if (this.playerId === playerId) {
     this.canPlayCard = false;
     this.selectedCard = null;
     this.selectedCall = null;
@@ -467,7 +467,7 @@ Display.prototype.turnEnd = function(playerId, play) {
 
   move(this.card(play.card)).player(playerId).toPlay().end();
 
-  if (this.id !== playerId) {
+  if (this.playerId !== playerId) {
     var chip = $('.chip.player-'+playerId)[0];
     // Determine right class name for chip
     var val = play.call.value;
@@ -494,7 +494,7 @@ Display.prototype.handleOutcome = function(outcome) {
       move(this).toJunk().end();
     });
     $('.in-play-chip').each(function() {
-      var player = this.dataset.player || self.id; // The owning player of chip is either in dataset or is the current player
+      var player = this.dataset.player || self.playerId; // The owning player of chip is either in dataset or is the current player
       move(this).player(player).toChipHome().end();
     });
   }
