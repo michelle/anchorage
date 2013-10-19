@@ -87,7 +87,7 @@ Display.prototype._setActionHandlers = function() {
   $(document).on('click', '.call-button', function() {
     if (self.canPlayCard) {
       var val = this.dataset.val;
-      self.selectedCall = {value: val[0], special: val[1] == 's'};
+      self.selectedCall = {value: parseInt(val[0], 10), special: val[1] == 's'};
       $('.in-show-chip').each(function(){
         move(this).player(self.id).toChipHome().end();
       });
