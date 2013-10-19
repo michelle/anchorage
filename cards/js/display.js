@@ -86,10 +86,12 @@ Display.prototype._setActionHandlers = function() {
 
   $(document).on('click', '.call-button', function() {
     if (self.canPlayCard) {
-      self.selectedCall = {value: $(this).data('val')};
+      var val = $(this).data('val');
+      self.selectedCall = {value: val[0], special: val[1] == 's'};
       if (self.selectedCard) {
         self.sendMove();
       }
+      move(this).player(self.id).toChipPlay().end();
     }
   });
 
@@ -266,6 +268,15 @@ Display.prototype._setMoveFunctions = function() {
     this.jitter = 15;
     return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
   };
+  move.prototype.toChipPlay = function() {
+    $(this.el).addClass('in-play-chip');
+    this.jitter = 15;
+    return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
+  };
+  move.prototype.toChipHome = function() {
+    $(this.el).removeClass('in-play-chip');
+    return this.to(0, 0);
+  };
   move.prototype.toOrientation = function() {
     var orientation = self.players[this.playerId].orientation;
     if (this.jitter) {
@@ -424,18 +435,23 @@ Display.prototype.turnEnd = function(playerId, play) {
     this.selectedCard = null;
     this.selectedCall = null;
   }
-  var chip = $('.chip.player-'+playerId)[0];
-  // Determine right class name for chip
-  var val = play.call.value;
-  if (play.call.special) {
-    val += 's';
-  }
-  chip.dataset.val = val;
+
   move(this.card(play.card)).player(playerId).toPlay().end();
-  move(chip).player(playerId).toPlay().end();
+
+  if (this.id !== playerId) {
+    var chip = $('.chip.player-'+playerId)[0];
+    // Determine right class name for chip
+    var val = play.call.value;
+    if (play.call.special) {
+      val += 's';
+    }
+    chip.dataset.val = val;
+    move(chip).player(playerId).toChipPlay().end();
+  }
 }
 
 Display.prototype.handleOutcome = function(outcome) {
+  var self = this;
   if (outcome) {
     for (var playerId in outcome) {
       var action = outcome[playerId];
@@ -447,6 +463,10 @@ Display.prototype.handleOutcome = function(outcome) {
 
     $('.in-play').each(function() {
       move(this).toJunk().end();
+    });
+    $('.in-play-chip').each(function() {
+      var player = this.dataset.player || self.id; // The owning player of chip is either in dataset or is the current player
+      move(this).player(player).toChipHome().end();
     });
   }
 }
