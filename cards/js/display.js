@@ -112,7 +112,7 @@ Display.prototype.sendMove = function() {
 
 Display.prototype._setDefaults = function(board) {
   this.CARD_SIZE = {width: 200, height: 280, scale: 0.6};
-  this.CHIP_SIZE = {width: 80, height: 80, scale: 0.6};
+  this.CHIP_SIZE = {width: 80, height: 80};
   // Generate board targets
 
   var boardWidth = board.clientWidth;
@@ -186,9 +186,9 @@ Display.prototype._setDefaults = function(board) {
 
   // Display the chips so they can be selected
   this.chipDisplay = [];
-  var chipMargin = 15;
+  var chipMargin = -15;
   var chipVerticalOffset = 30;
-  var chipWidth = (this.CHIP_SIZE.width * this.CHIP_SIZE.scale) + chipMargin;
+  var chipWidth = this.CHIP_SIZE.width + chipMargin;
   var horizontalOffset = chipWidth * 7 / 2;
   for (var i = 0; i < 7; i++) {
     this.chipDisplay.push({
