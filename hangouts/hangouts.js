@@ -35,13 +35,13 @@ function pushEvent(type, data, isClientServer) {
   var events;
   if (isClientServer) {
     events = gapi.hangout.data.getValue(eventPrefix + '-events');
+    events = events ? JSON.parse(events) : [];
   } else {
     events = gEvents;
   }
 
   var ev = {type: type, data: data};
   if (events) {
-    events = JSON.parse(events);
     events.push(ev);
   } else {
     events = [ev];
@@ -60,12 +60,13 @@ function startAnchorage() {
   display = new Display(board, me.person.displayName, me.person.id);
 
   // TODO: Is there a possible race condition here?
-  if (participants.length == 1 
-    || gapi.hangout.data.getValue('server') == me.person.id) {
+  var server = gapi.hangout.data.getValue('server');
+  if (!server || server == me.person.id) {
     isServer = true;
     console.log('I am the server!');
 
     gEvents = gapi.hangout.data.getValue('sc-events');
+    gEvents = gEvents ? JSON.parse(gEvents) : [];
 
     // Store my id as the server in case I get dropped out of the call
     gapi.hangout.data.setValue('server', me.person.id)
@@ -121,12 +122,16 @@ function startAnchorage() {
     var events;
     var eventQueue = isServer ? 'cs-events' : 'sc-events';
 
+    console.log(eventObj.state[eventQueue]);
     if (!eventObj.state[eventQueue]) {
+      console.log('returning early :(');
       return;
     }
     events = JSON.parse(eventObj.state[eventQueue]);
 
+    console.log('processed up to', eventId);
     for (var i = eventId; i < events.length; ++i, ++eventId) {
+      console.log('processing eventid', eventId)
       var ev = events[i];
       console.log(ev.type, ev.data);
       if (isServer) {
