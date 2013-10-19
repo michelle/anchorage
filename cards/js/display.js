@@ -10,7 +10,7 @@
   this._addUIElements();
 
   this._setHoverFunctions();
-
+  this._setActionHandlers();
   // So I can identify myself later.
   this.secret = Math.random();
   this.name = name;
@@ -27,42 +27,82 @@ Display.prototype._initializeCards = function() {
 Display.prototype._setHoverFunctions = function() {
   var self = this;
   $(document).on('mouseover', '.in-hand', function() {
-    var data = this.dataset['transforms'];
-    this.dataset['transformsold'] = data;
-
-    // Ugh
-    var arrData = JSON.parse(data);
-    /*
-    for (var i = 0, ii = arrData.length; i < ii; i += 1) {
-      if (arrData[i].indexOf('rotate') !== -1) {
-        arrData[i] = 'rotate(0deg)';
-      }
-    }*/
-    move(this).restore(arrData).rotate(10).translate(0, -100).end();
+    if (!$(this).hasClass('selected')) {
+      var data = this.dataset['transforms'];
+      this.dataset['transformsold'] = data;
+      // Ugh
+      var arrData = JSON.parse(data);
+      move(this).restore(arrData).rotate(10).translate(0, -100).end();
+    }
   });
 
   $(document).on('mouseout', '.in-hand', function() {
-    var data = JSON.parse(this.dataset['transformsold']);
-    move(this).restore(data).end();
-  });
-
-
-  // TODO: delurk these.
-  function toUsableCard(classname) {
-    var lurk = classname.split('-');
-    var card = {suit: lurk[0][lurk[0].length - 1], value: lurk[1][0]};
-    return card;
-  }
-  $(document).on('click', '.in-hand', function() {
-    if (self.canPlayCard) {
-      var card = toUsableCard($(this).children('.card').attr('class'));
-      self.emit('play', {playerId: self.id, call: {value: 1}, card: card});
+    var el = this;
+    if (!$(el).hasClass('selected')) {
+      self._unselectCard(el);
     }
   });
+};
+
+Display.prototype._unselectAllCards = function() {
+  var self = this;
+  $('.card_container.in-hand.selected').each(function(){
+    self._unselectCard(this);
+  });
+};
+
+Display.prototype._unselectCard = function(el) {
+  var data;
+  try {
+    data = JSON.parse(el.dataset['transformsold']);
+  } catch (e) {
+    return;
+  }
+  $(el).removeClass('selected');
+  move(el).restore(data).end();
+};
+
+Display.prototype._setActionHandlers = function() {
+  var self = this;
+
+  $(document).on('click', '.in-hand', function() {
+    if (self.canPlayCard) {
+      var oldCard = self.selectedCard;
+      self.selectedCard = self.cardObject($(this).children('.card').attr('class'));
+      // Unselect currently selected cards
+      self._unselectAllCards();
+      // Set this card as selected so it doesn't disappear on mouseout
+      if (self.selectedCard == oldCard) {
+        // They just clicked the same card, deselect
+        self.selectedCard = null;
+        return;
+      }
+      $(this).addClass('selected');
+      if (self.selectedCall) {
+        self.sendMove();
+      }
+    }
+  });
+
+  $(document).on('click', '.call-button', function() {
+    if (self.canPlayCard) {
+      self.selectedCall = {value: $(this).data('val')};
+      if (self.selectedCard) {
+        self.sendMove();
+      }
+    }
+  });
+
   $(document).on('click', '#HACK', function() {
     self.emit('start');
     $(this).remove();
   });
+};
+
+Display.prototype.sendMove = function() {
+  this.emit('play', {playerId: self.id, call: self.selectedCall, card: self.selectedCard});
+  this._unselectAllCards();
+  this.canPlayCard = false;
 };
 
 Display.prototype._setDefaults = function(board) {
@@ -268,6 +308,12 @@ Display.prototype.card = function(name) {
   return document.querySelector('.' + name).parentNode;
 }
 
+Display.prototype.cardObject = function(classname) {
+  var lurk = classname.split('-');
+  var card = {suit: lurk[0][lurk[0].length - 1], value: lurk[1][0]};
+  return card;
+}
+
 Display.prototype.profile = function(playerId) {
   return $('#player' + playerId);
 }
@@ -375,6 +421,8 @@ Display.prototype.turnStart = function(playerId) {
 Display.prototype.turnEnd = function(playerId, play) {
   if (this.id === playerId) {
     this.canPlayCard = false;
+    this.selectedCard = null;
+    this.selectedCall = null;
   }
   this.profile(playerId).text('Guessed ' + play.call.value);
   move(this.card(play.card)).player(playerId).toPlay().end();

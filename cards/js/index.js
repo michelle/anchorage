@@ -2,7 +2,7 @@
 $(function(){
 
   // TODO: how to do the ID??? :(
-  display = new Display(board, 'Michelle');
+  display = new Display(board, 'Michelle' /* TODO: Plug in Google name */);
 
   var serverEvents = ['join', 'game-start', 'round-start', 'turn-start', 'turn-end', 'round-end', 'game-end'];
   async.each(serverEvents, function(event){

@@ -16,7 +16,7 @@ function Game() {
 // game-start, {0: {hand: ['s-5', 'c-0']}, ...}
 // round-start, undefined
 // turn-start, {playerId: 0}
-// turn-end, {playerId: 0, play: {card: 's-9', call: '1'}} 
+// turn-end, {playerId: 0, play: {card: 's-9', call: '1'}}
 // round-end, {0: {cardsWon: ['s-5'], score: 3}, 1: ...}
 // game-end, {0: {score: 4}, 1: {score: 5} ...}
 
@@ -67,7 +67,7 @@ Game.prototype.start = function() {
   this.emit('game-start', this._dumpStart());
 };
 
-// Called manually after a game-start or 
+// Called manually after a game-start or
 Game.prototype.startRound = function() {
   if (!this.started || this.turn < this.numPlayers) {
     throw new Error('Not a good time to start a round--you can only start a round when everyone has played their turn and after a game has been started.');
@@ -316,7 +316,7 @@ Game.prototype.startMockGame = function(autoRound) {
 
 Game.prototype.joinRandom = function(delay) {
   delay = delay || 500; // ms delay.
-  var randNames = ['Eric', 'Dan', 'Daiwei'];
+  var randNames = ['Dan', 'Michelle'];
   var randomPlayer = this.join({name: randNames[Math.floor(Math.random() * randNames.length)]});
 
   var self = this;
