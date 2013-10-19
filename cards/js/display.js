@@ -403,7 +403,10 @@ Display.prototype.join = function(playerId, info) {
   if (info.id === this.id) {
     this.playerId = playerId;
     if (this.playerId !== 0) {
-      this.players = this.players.slice(this.playerId, this.players.length).concat(this.players.slice(0, this.playerId));
+      var start = (this.players.length - 1) - this.playerId:
+      // e.g. player orientations = [0, 90, 180, 270], playerId = 1
+      // ==> want index 1 orientation to be 0 ==> [270, 0, 90, 180]
+      this.players = this.players.slice(start, this.players.length).concat(this.players.slice(0, start));
     }
   }
   this.profile(playerId).text(info.name);
