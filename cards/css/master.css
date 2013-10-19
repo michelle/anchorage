@@ -180,7 +180,7 @@ h1 { color: red; font-size: 96px; }
 }
 
 .chip[data-val="1"] .el:after {
-  content: "2";
+  content: "1";
   font-size: 36px;
   font-weight: bold;
 }

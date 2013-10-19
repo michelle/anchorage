@@ -86,8 +86,11 @@ Display.prototype._setActionHandlers = function() {
 
   $(document).on('click', '.call-button', function() {
     if (self.canPlayCard) {
-      var val = $(this).data('val');
+      var val = this.dataset.val;
       self.selectedCall = {value: val[0], special: val[1] == 's'};
+      $('.in-show-chip').each(function(){
+        move(this).player(self.id).toChipHome().end();
+      });
       if (self.selectedCard) {
         self.sendMove();
       }
@@ -109,6 +112,7 @@ Display.prototype.sendMove = function() {
 
 Display.prototype._setDefaults = function(board) {
   this.CARD_SIZE = {width: 200, height: 280, scale: 0.6};
+  this.CHIP_SIZE = {width: 80, height: 80, scale: 0.6};
   // Generate board targets
 
   var boardWidth = board.clientWidth;
@@ -179,6 +183,19 @@ Display.prototype._setDefaults = function(board) {
       orientation: 270
     }
   ];
+
+  // Display the chips so they can be selected
+  this.chipDisplay = [];
+  var chipMargin = 15;
+  var chipVerticalOffset = 30;
+  var chipWidth = (this.CHIP_SIZE.width * this.CHIP_SIZE.scale) + chipMargin;
+  var horizontalOffset = chipWidth * 7 / 2;
+  for (var i = 0; i < 7; i++) {
+    this.chipDisplay.push({
+      x: boardCenter.x - horizontalOffset + i * chipWidth,
+      y: boardCenter.y + chipVerticalOffset
+    });
+  }
 
   // Post process
   for (var i = 0; i < this.players.length; i++) {
@@ -269,13 +286,21 @@ Display.prototype._setMoveFunctions = function() {
     return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
   };
   move.prototype.toChipPlay = function() {
+    this.toplevel = true;
     $(this.el).addClass('in-play-chip');
     this.jitter = 15;
     return this.to(self.players[this.playerId].play.x, self.players[this.playerId].play.y);
   };
+  move.prototype.toChipShow = function(index) {
+    // Display chips to select from
+    $(this.el).addClass('in-show-chip');
+    this.toplevel = true;
+    return this.to(self.chipDisplay[index].x, self.chipDisplay[index].y);
+  }
   move.prototype.toChipHome = function() {
+    $(this.el).removeClass('in-show-chip');
     $(this.el).removeClass('in-play-chip');
-    return this.to(0, 0);
+    return this.to(self.players[this.playerId].hand.x, self.players[this.playerId].hand.y);
   };
   move.prototype.toOrientation = function() {
     var orientation = self.players[this.playerId].orientation;
@@ -424,6 +449,10 @@ Display.prototype.gameStart = function(players) {
 Display.prototype.turnStart = function(playerId) {
   if (this.id === playerId) {
     this.canPlayCard = true;
+    // Show all the chips
+    $('.call-button').each(function(i){
+      move(this).toChipShow(i).end();
+    });
   }
   $('.player').removeClass('in-turn');
   this.profile(playerId).addClass('in-turn');
@@ -446,7 +475,7 @@ Display.prototype.turnEnd = function(playerId, play) {
       val += 's';
     }
     chip.dataset.val = val;
-    move(chip).player(playerId).toChipPlay().end();
+    move(chip).player(playerId).toChipPlay().duration(750).end();
   }
 }
 
