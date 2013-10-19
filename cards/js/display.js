@@ -100,7 +100,7 @@ Display.prototype._setActionHandlers = function() {
 };
 
 Display.prototype.sendMove = function() {
-  this.emit('play', {playerId: self.id, call: self.selectedCall, card: self.selectedCard});
+  this.emit('play', {playerId: this.id, call: this.selectedCall, card: this.selectedCard});
   this._unselectAllCards();
   this.canPlayCard = false;
 };
@@ -424,8 +424,15 @@ Display.prototype.turnEnd = function(playerId, play) {
     this.selectedCard = null;
     this.selectedCall = null;
   }
-  this.profile(playerId).text('Guessed ' + play.call.value);
+  var chip = $('.chip.player-'+playerId)[0];
+  // Determine right class name for chip
+  var val = play.call.value;
+  if (play.call.special) {
+    val += 's';
+  }
+  chip.dataset.val = val;
   move(this.card(play.card)).player(playerId).toPlay().end();
+  move(chip).player(playerId).toPlay().end();
 }
 
 Display.prototype.handleOutcome = function(outcome) {

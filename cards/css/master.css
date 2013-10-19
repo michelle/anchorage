@@ -95,6 +95,11 @@ h1 { color: red; font-size: 96px; }
   -webkit-transform: rotateY(180deg);
 }
 
+.h-0 .number, .s-0 .number, .c-0 .number, .d-0 .number {
+  letter-spacing: -5px;
+  padding-right: 3px;
+}
+
 .front {
   z-index: 2;
 }
@@ -154,12 +159,57 @@ h1 { color: red; font-size: 96px; }
 
 .chip {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  text-align: center;
   background-color: #fff;
+  color: black;
   border-radius: 100%;
-  bottom: 0px;
-  right: 22%;
+  top: 0;
+  left: 0;
+  box-shadow: 0px 0px 3px 2px black;
+  font-family: Helvetica, Arial;
+  text-transform: uppercase;
+}
+
+.chip[data-val="0"] .el:after {
+  content: "0";
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.chip[data-val="1"] .el:after {
+  content: "2";
+  font-size: 36px;
+  font-weight: bold;
+}
+.chip[data-val="2"] .el:after {
+  content: "2";
+  font-size: 36px;
+  font-weight: bold;
+}
+.chip[data-val="3"] .el:after {
+  content: "3";
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.chip[data-val="2s"] .el:after {
+  content: "double";
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.chip[data-val="3s"] .el:after {
+  content: "triple";
+  font-size: 16px;
+  font-weight: bold;
+}
+.chip[data-val="4s"] .el:after {
+  content: "quad";
+  font-size: 22px;
+  font-weight: bold;
 }
 
 .cover {
@@ -179,9 +229,9 @@ h1 { color: red; font-size: 96px; }
   height: 1200px;
   background: transparent;
   background: radial-gradient(circle, rgba(255,250,220,0.2) 10%, rgba(255,250,230,0.05) 40%, rgba(0,0,0,0.0) 70%);
-  -webkit-filter: brightness(200%);
+  /*-webkit-filter: brightness(200%);
   -moz-filter: brightness(200%);
-  filter: brightness(200%);
+  filter: brightness(200%);*/
   pointer-events: none;
   z-index: 100001;
 }
