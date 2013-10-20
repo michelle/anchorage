@@ -35,7 +35,7 @@ function pushEvent(type, data, isClientServer) {
   var events;
   if (isClientServer) {
     events = gapi.hangout.data.getValue(eventPrefix + '-events');
-    events = events ? JSON.parse(events) : [];
+    events = events ? JSON.parse(util.lzw_decode(events)) : [];
   } else {
     events = gEvents;
   }
@@ -47,7 +47,7 @@ function pushEvent(type, data, isClientServer) {
     events = [ev];
   }
   console.log('Pushing ' + eventPrefix + ' event: ' + JSON.stringify(ev));
-  gapi.hangout.data.setValue(eventPrefix + '-events', JSON.stringify(events));
+  gapi.hangout.data.setValue(eventPrefix + '-events', util.lzw_encode(JSON.stringify(events)));
 }
 
 function startAnchorage() {
@@ -66,7 +66,7 @@ function startAnchorage() {
     console.log('I am the server!');
 
     gEvents = gapi.hangout.data.getValue('sc-events');
-    gEvents = gEvents ? JSON.parse(gEvents) : [];
+    gEvents = gEvents ? JSON.parse(util.lzw_decode(gEvents)) : [];
 
     // Store my id as the server in case I get dropped out of the call
     gapi.hangout.data.setValue('server', me.person.id)
@@ -122,16 +122,12 @@ function startAnchorage() {
     var events;
     var eventQueue = isServer ? 'cs-events' : 'sc-events';
 
-    console.log(eventObj.state[eventQueue]);
     if (!eventObj.state[eventQueue]) {
-      console.log('returning early :(');
       return;
     }
-    events = JSON.parse(eventObj.state[eventQueue]);
+    events = JSON.parse(util.lzw_decode(eventObj.state[eventQueue]));
 
-    console.log('processed up to', eventId);
     for (var i = eventId; i < events.length; ++i, ++eventId) {
-      console.log('processing eventid', eventId)
       var ev = events[i];
       console.log(ev.type, ev.data);
       if (isServer) {
