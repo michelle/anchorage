@@ -30,13 +30,15 @@ function pushEvent(type, data, isClientServer) {
   // This will call us back to send the event to display
   // so that the server can handle events the same way
   // as clients
-
   var eventPrefix = isClientServer ? 'cs' : 'sc'
   var events;
   if (isClientServer) {
     events = gapi.hangout.data.getValue(eventPrefix + '-events');
-    events = events ? JSON.parse(events) : [];
+    events = events ? JSON.parse(util.lzw_decode(events)) : [];
   } else {
+    // Use a global object if you're the server. getValue is not guaranteed
+    // to have the latest data you set using setValue. It only seems to be
+    // updated when all clients have received the data.
     events = gEvents;
   }
 
@@ -47,10 +49,13 @@ function pushEvent(type, data, isClientServer) {
     events = [ev];
   }
   console.log('Pushing ' + eventPrefix + ' event: ' + JSON.stringify(ev));
-  gapi.hangout.data.setValue(eventPrefix + '-events', JSON.stringify(events));
+  gapi.hangout.data.setValue(eventPrefix + '-events', util.lzw_encode(JSON.stringify(events)));
 }
 
 function startAnchorage() {
+  // We should be able to reconstruct the game's
+  // current display state by re-applying all the events
+  // Start at 0 in case we dropped out earlier
   eventId = 0;
   var isServer = false;
 
@@ -59,14 +64,15 @@ function startAnchorage() {
 
   display = new Display(board, me.person.displayName, me.person.id);
 
-  // TODO: Is there a possible race condition here?
+  // TODO: Handle race condition of 2 people opening app
+  // at the same time
+  // Setup our event handlers before processing the event queue
   var server = gapi.hangout.data.getValue('server');
   if (!server || server == me.person.id) {
     isServer = true;
-    console.log('I am the server!');
 
     gEvents = gapi.hangout.data.getValue('sc-events');
-    gEvents = gEvents ? JSON.parse(gEvents) : [];
+    gEvents = gEvents ? JSON.parse(util.lzw_decode(gEvents)) : [];
 
     // Store my id as the server in case I get dropped out of the call
     gapi.hangout.data.setValue('server', me.person.id)
@@ -105,7 +111,7 @@ function startAnchorage() {
 
   var players = gapi.hangout.data.getValue('players');
   var alreadyInGame = false;
-  // Setup our event handlers before processing the event queue
+
   if (players) {
     var parsed = JSON.parse(players);
     if (!(me.person.id in parsed)) {
@@ -122,16 +128,12 @@ function startAnchorage() {
     var events;
     var eventQueue = isServer ? 'cs-events' : 'sc-events';
 
-    console.log(eventObj.state[eventQueue]);
     if (!eventObj.state[eventQueue]) {
-      console.log('returning early :(');
       return;
     }
-    events = JSON.parse(eventObj.state[eventQueue]);
+    events = JSON.parse(util.lzw_decode(eventObj.state[eventQueue]));
 
-    console.log('processed up to', eventId);
     for (var i = eventId; i < events.length; ++i, ++eventId) {
-      console.log('processing eventid', eventId)
       var ev = events[i];
       console.log(ev.type, ev.data);
       if (isServer) {
@@ -143,14 +145,6 @@ function startAnchorage() {
   };
 
   gapi.hangout.data.onStateChanged.add(onStateChange);
-
-  // var onParticipantsChange = function(eventObj) {
-  //   participants_ = eventObj.participants;
-  // };
-
-  // gapi.hangout.onParticipantsChanged.add(onParticipantsChange);
-
-  // TODO: how to do the ID??? :(
 
   if (!alreadyInGame) {
     pushEvent('join', {name: display.name, id: me.person.id}, true);
