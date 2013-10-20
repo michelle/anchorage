@@ -12,7 +12,7 @@
     <meta charset="utf-8" />
     <title>Anchorage</title>
 
-    <link rel="stylesheet" href="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/css/master.css" media="all" />
+    <link rel="stylesheet" href="https://dl.dropboxusercontent.com/u/1387280/anchorage/css/master.css" media="all" />
 
   </head>
   <body>
@@ -1225,15 +1225,15 @@
         </div>
       </div>
     <script src="//plus.google.com/hangouts/_/api/v1/hangout.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/jquery.min.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/game/events.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/game/util.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/async.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/move.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/display.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/game/deck.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/game/player.js"></script>
-    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/cards/js/game/game.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/jquery.min.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/game/events.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/game/util.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/async.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/move.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/display.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/game/deck.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/game/player.js"></script>
+    <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/js/game/game.js"></script>
     <script src="https://dl.dropboxusercontent.com/u/1387280/anchorage/hangouts/hangouts.js"></script>
   </body>
 </html>
