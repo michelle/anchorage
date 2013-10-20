@@ -2,7 +2,7 @@
 $(function(){
 
   // TODO: how to do the ID??? :(
-  display = new Display(board, 'Michelle' /* TODO: Plug in Google name */);
+  display = new Display(board, 'Michelle' /* TODO: Plug in Google name */, 'top_secret_id');
 
   var serverEvents = ['join', 'game-start', 'round-start', 'turn-start', 'turn-end', 'round-end', 'game-end'];
   async.each(serverEvents, function(event){
@@ -22,7 +22,7 @@ $(function(){
     });
   });
 
-  game.receive('join', {name: display.name, _secret: display.secret});
+  game.receive('join', {name: display.name, id: display.id});
 
 });
 
